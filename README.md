@@ -27,6 +27,10 @@ python -m venv venv
 ```
 pip install -r requirements.txt
 ```
+Переходим в папку приложения.
+```
+cd thebestchat
+```
 Для настройки и заполнения базы данных с помощью миграций выполняем команды:
 ```
 python manage.py makemigrations
