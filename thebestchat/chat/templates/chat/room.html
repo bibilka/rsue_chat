@@ -1,16 +1,169 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
-    {% load static %}
+	{% load static %}
+
+	<title>Online chat</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+	<link rel="stylesheet" href="{% static 'styles/style.css' %}"/>
+	<script src="{% static 'scripts/scripts.js' %}"></script>
+
+	<script type="text/javascript">
+	</script>
 </head>
 <body>
-    <input id="message-input" type="text" size="100"><br>
-    <input id="btn-submit" type="button" value="Send">
-    <div id="chat">
+<section class="body">
+		<div class="container-fluid">
 
-    </div>
-    <script type="text/javascript" src="{% static 'script.js' %}"></script>
+			<div class="row">
+
+				<div class="col-4 bg-light part">
+
+					<div class="search row">
+						<div class="col">
+							<div class="row mt-3 mb-3">
+								<form>
+									<div class="col">
+										<div class="input-group">
+									        <div class="input-group-prepend">
+									          <div class="input-group-text">Ваш ID: 777</div>
+									        </div>
+											<input type="text" class="form-control" placeholder="ID друга" aria-label="Search"aria-describedby="button-addon2">
+
+											<button class="btn btn-outline-primary w-5 d-flex align-items-center" type="button" id="button-addon2">
+												Пригласить
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="row p-2 mb-3" style="background-color: #DCDCDC">
+						<div class="col d-flex d-flex justify-content-center align-items-center">
+							<label for="exampleColorInput" class="form-label" style="margin-right: 20px; font-size: 20px; font-weight: bold;">Выберите цвет диалога</label>
+							<input type="color" class="form-control form-control-color" id="exampleColorInput" value="#8eb4d4" title="Choose your color" style="margin-right: 20px">
+							<button type="button" onClick="updateDialogColor()" class="btn btn-success">Сохранить</button>
+						</div>
+					</div>
+
+					<div class="friends">
+
+<!-- -------------------------------------------------------- -->
+
+						<div class="row pt-1 pb-1 d-flex align-items-center friend"
+						type="button" value="Click" onmousedown="viewDialog()">
+					        <div class="col-2">
+			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
+					          	</div>
+					        <div class="col-8 mt-3">
+					            <p style="font-weight: bold">Егор Петренко</p>
+					            <p class="">Последнее сообщение</p>
+			          		</div>
+							<div class="col-2 d-flex justify-content-end">
+								<span class="badge bg-secondary"></span>
+							</div>
+						</div>
+
+<!-- -------------------------------------------------------- -->
+
+						<div class="row pt-1 pb-1 d-flex align-items-center friend"
+						type="button" value="Click" onmousedown="viewDialog()">
+					        <div class="col-2">
+			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
+							</div>
+					        <div class="col-8 mt-3">
+					            <p style="font-weight: bold">Сергей Кокшаров</p>
+					            <p class="">Сделай лабу(</p>
+			          		</div>
+							<div class="col-2 d-flex justify-content-end">
+								<span class="badge bg-secondary">2</span>
+							</div>
+						</div>
+
+						<div class="row pt-1 pb-1 d-flex align-items-center friend"
+						type="button" value="Click" onmousedown="viewDialog()">
+					        <div class="col-2">
+			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
+							</div>
+					        <div class="col-8 mt-3">
+					            <p style="font-weight: bold">Дмитрий Березин</p>
+					            <p class="">А как на питоне сделать калькулятор?</p>
+			          		</div>
+							<div class="col-2 d-flex justify-content-end">
+								<span class="badge bg-secondary">1</span>
+							</div>
+						</div>
+
+						<div class="row pt-1 pb-1 d-flex align-items-center friend"
+						type="button" value="Click" onmousedown="viewDialog()">
+					        <div class="col-2">
+			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
+							</div>
+					        <div class="col-8 mt-3">
+					            <p style="font-weight: bold">Алексей Воротынцев</p>
+					            <p class="">Пошли пить пиво</p>
+			          		</div>
+							<div class="col-2 d-flex justify-content-end">
+								<span class="badge bg-secondary">5</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col-8" id="dialog" style="background-color: #8eb4d4; height: 100vh;">
+					<div id="dialogContent" style="display: none">
+						<div class="row" id="messages" style="height: 90vh; overflow: auto;">
+							<div class="col" id="chat">
+
+<!-- -------------------------------------------------------- -->
+
+								<div class="row mt-1">
+									<div class="col-3">
+			         	 				<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
+									</div>
+									<div class="col-5">
+										<p class="text-justify my-message" style="float: left">
+											Привет как дела?
+										</p>
+									</div>
+								</div>
+
+								<div class="row mt-1 d-flex flex-row-reverse">
+									<div class="col-3">
+			         	 				<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
+									</div>
+									<div class="col-5">
+										<p class="text-justify friend-message" style="float: right">
+											Привет номрально твои как?
+										</p>
+									</div>
+								</div>
+
+<!-- -------------------------------------------------------- -->
+
+							</div>
+						</div>
+
+						<div class="row d-flex justify-content-center p-3">
+							<div class="col-7">
+						    	<textarea class="form-control" id="message-input" placeholder="Ваше сообщение" id="exampleFormControlTextarea1" rows="1"></textarea>
+			  				</div>
+
+					  		<div class="col-1">
+					  			<button type="submit" id="btn-submit" type="button" value="Send" class="btn btn-outline-primary rounded-circle d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+					  				<img src="{% static 'images/send.png' %}">
+					  			</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+    <script type="text/javascript" src="{% static 'scripts/script.js' %}"></script>
 </body>
 </html>
