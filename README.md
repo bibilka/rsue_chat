@@ -36,6 +36,10 @@ cd thebestchat
 python manage.py makemigrations
 python manage.py migrate
 ```
+Создаем пользователя для админ-панели с помощью команды:
+```
+python manage.py createsuperuser
+```
 
 ### 4. Запуск.
 
@@ -46,6 +50,8 @@ python manage.py migrate
 python manage.py runserver 80
 ```
 _____
-:white_check_mark: <b>Готово!</b> :+1: :tada: Проект запущен и доступен по адресу: `http://localhost/` или `http://127.0.0.1/`
+:white_check_mark: <b>Готово!</b> :+1: :tada: 
+
+Проект запущен и доступен по адресу: `http://localhost/` или `http://127.0.0.1/`
 
 
