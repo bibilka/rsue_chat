@@ -14,19 +14,29 @@
 <body>
 <section class="body">
 		<div class="container-fluid">
-
 			<div class="row">
-
 				<div class="col-4 bg-light part">
-
 					<div class="search row">
-						<div class="col">
 							<div class="row mt-3 mb-3">
-								<form>
+								<div class="col">
+								{% if form.non_field_errors %}
+								<div class="alert alert-warning" role="alert">
+									<b>Ошибка. </b>{{ form.non_field_errors.0 }}
+								</div>
+								{% endif %}
+								{% if messages %}
+								  {% for msg in messages %}
+								  <div class="alert alert-{{msg.level_tag}} " role="alert">
+									  {{msg.message}}
+								  </div>
+								  {% endfor %}
+							  	{% endif %}
+								<form action="{% url 'invite' %}" method="post">
+									{% csrf_token %}
 									<div class="row">
 										<div class="col">
 											<div class="alert alert-primary nickname" role="alert">
-												Профиль: <b>{{ nickname }}</b> <a href="{% url 'logout' %}">(выйти)</a>
+												Профиль: <b>{{ user.username }}</b> <a href="{% url 'logout' %}">(выйти)</a>
 											</div>
 										</div>
 										<div class="col">
@@ -35,11 +45,11 @@
 
 
 												<div class="input-group-prepend">
-													<div class="input-group-text">Ваш ID: {{ id }}</div>
+													<div class="input-group-text">Ваш ID: {{ user.id }}</div>
 												</div>
-												<input type="text" class="form-control" placeholder="ID друга" aria-label="Search"aria-describedby="button-addon2">
+												<input type="number" class="form-control" placeholder="ID друга" required name="friend" aria-label="Search" aria-describedby="button-addon2">
 
-												<button class="btn btn-outline-primary w-5 d-flex align-items-center" type="button" id="button-addon2">
+												<button class="btn btn-outline-primary w-5 d-flex align-items-center" type="submit" id="button-addon2">
 													Пригласить
 												</button>
 											</div>
@@ -59,66 +69,21 @@
 					</div>
 
 					<div class="friends">
-
-<!-- -------------------------------------------------------- -->
-
+						{% for friend in user.profile.friends.all %}
 						<div class="row pt-1 pb-1 d-flex align-items-center friend"
 						type="button" value="Click" onmousedown="viewDialog()">
 					        <div class="col-2">
 			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
-					          	</div>
+							</div>
 					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">Егор Петренко</p>
+					            <p style="font-weight: bold">{{ friend.username }}</p>
 					            <p class="">Последнее сообщение</p>
 			          		</div>
 							<div class="col-2 d-flex justify-content-end">
-								<span class="badge bg-secondary"></span>
+								<span class="badge bg-secondary">{{ friend.profile.messages }}</span>
 							</div>
 						</div>
-
-<!-- -------------------------------------------------------- -->
-
-						<div class="row pt-1 pb-1 d-flex align-items-center friend"
-						type="button" value="Click" onmousedown="viewDialog()">
-					        <div class="col-2">
-			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
-							</div>
-					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">Сергей Кокшаров</p>
-					            <p class="">Сделай лабу(</p>
-			          		</div>
-							<div class="col-2 d-flex justify-content-end">
-								<span class="badge bg-secondary">2</span>
-							</div>
-						</div>
-
-						<div class="row pt-1 pb-1 d-flex align-items-center friend"
-						type="button" value="Click" onmousedown="viewDialog()">
-					        <div class="col-2">
-			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
-							</div>
-					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">Дмитрий Березин</p>
-					            <p class="">А как на питоне сделать калькулятор?</p>
-			          		</div>
-							<div class="col-2 d-flex justify-content-end">
-								<span class="badge bg-secondary">1</span>
-							</div>
-						</div>
-
-						<div class="row pt-1 pb-1 d-flex align-items-center friend"
-						type="button" value="Click" onmousedown="viewDialog()">
-					        <div class="col-2">
-			         	 		<img src="https://avatars.mds.yandex.net/get-pdb/1873964/56d28094-012a-491a-96af-42e5aea26b2c/s1200?webp=false" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
-							</div>
-					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">Алексей Воротынцев</p>
-					            <p class="">Пошли пить пиво</p>
-			          		</div>
-							<div class="col-2 d-flex justify-content-end">
-								<span class="badge bg-secondary">5</span>
-							</div>
-						</div>
+						{% endfor %}
 					</div>
 				</div>
 

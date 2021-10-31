@@ -1,10 +1,22 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.forms import PasswordInput
-from django.contrib.auth.models import User
 
 from .models import *
 
+# форма приглашения друга
+class InviteForm(forms.Form):
+    friend = forms.IntegerField(required=True)
+
+    def clean(self):
+        cleaned_data = super(InviteForm, self).clean()
+        friend = cleaned_data.get('friend')
+
+        if not User.objects.filter(id=friend).exists():
+            raise forms.ValidationError("К сожалению, пользователя с таким ID не существует :c")
+
+
+# форма регистрации
 class RegisterForm(forms.Form):
 
     username = forms.CharField(max_length=10, required=True, label='Никнейм', validators=[
@@ -35,6 +47,7 @@ class RegisterForm(forms.Form):
 
         return cleaned_data
 
+# форма авторизации
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=10, required=True, label='Никнейм')
     password = forms.CharField(widget=PasswordInput(), required=True, label='Пароль')
