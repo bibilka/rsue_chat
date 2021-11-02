@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
@@ -6,13 +7,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from chat.forms import RegisterForm, LoginForm, InviteForm
+from chat.models import Profile, Chat, Message
 
-# from chat.models import Friendship
 
 # обработка 404
-from chat.models import Profile
-
-
 def pageNotFound(request, exception):
     return HttpResponseNotFound("<h1>404 страница не найдена</h1>")
 
@@ -39,8 +37,15 @@ def invite(request):
                 form.add_error(None, 'Вы уже дружите с ' + friend.username + '.')
 
             else:
+                # добавляем пользователей в друзья
                 request.user.profile.friends.add(friend)
                 friend.profile.friends.add(request.user)
+
+                # создаем объект чата
+                chat = Chat.objects.create(name=request.user.username+'/'+friend.username)
+                chat.profiles.add(friend.profile)
+                chat.profiles.add(request.user.profile)
+                chat.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Пользователь ' + friend.username + ' добавлен в ваши друзья!')
                 return redirect('chat')
@@ -49,14 +54,56 @@ def invite(request):
             print(str(e))
             form.add_error(None, 'Произошла непредвиденная ошибка. Пожалуйста, обратитесь к администратору')
 
-    return render(request, 'chat/room.html', {'form': form, 'id': request.user.id, 'nickname': request.user.username})
+    # получаем все чаты пользователя с последним сообщением
+    chats = []
+    for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
+        chats.append({
+            'id': chat.id,
+            'friend': chat.profiles.exclude(user_id=request.user.id).first,
+            'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
+        })
+
+    return render(request, 'chat/room.html', {'form': form, 'id': request.user.id, 'nickname': request.user.username, 'chats': chats})
 
 # чат
 def chat(request):
     if request.user.is_authenticated:
-        return render(request, 'chat/room.html', {'user': request.user})
+        # получаем все чаты пользователя с последним сообщением
+        chats = []
+        for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
+            chats.append({
+                'id': chat.id,
+                'friend': chat.profiles.exclude(user_id=request.user.id).first,
+                'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
+            })
+
+        return render(request, 'chat/room.html', {'user': request.user, 'chats': chats})
 
     return redirect('auth')
+
+# диалог
+def dialog(request, chat_id):
+
+    # проверям что юзер авторизован
+    if not request.user.is_authenticated:
+        return redirect('auth')
+
+    # проверяем что этот чат юзера, а не чужой
+    if not Chat.objects.filter(profiles__id=request.user.profile.id).filter(id=chat_id).exists():
+        raise PermissionDenied()
+
+    # получаем чаты пользователя и их последние сообщения
+    chats = []
+    for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
+        chats.append({
+            'id': chat.id,
+            'friend': chat.profiles.exclude(user_id=request.user.id).first,
+            'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
+        })
+
+    messages = Message.objects.filter(chat=chat_id)
+
+    return render(request, 'chat/room.html', {'chat': chat_id, 'chats': chats, 'profile': request.user.profile.id, 'chatMessages': messages})
 
 # авторизация
 def auth(request):

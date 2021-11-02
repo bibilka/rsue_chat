@@ -4,12 +4,21 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from random import randint
-# Create your models here.
 
 # Профиль пользователя
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    friends = models.ManyToManyField(User, blank=True, related_name='friends')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    friends = models.ManyToManyField(User, blank=True, related_name='friends', verbose_name='Друзья')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
+    chats = models.ManyToManyField('Chat', related_name='chats')
+
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Список профилей'
+
+    def __str__(self):
+        return self.user.username
 
     @staticmethod
     def messages():
@@ -27,18 +36,25 @@ class Profile(models.Model):
 
 # Чат
 class Chat(models.Model):
-    name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-    user = models.ManyToManyField(get_user_model())
+    name = models.CharField(max_length=100, verbose_name="Чат")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
+    profiles = models.ManyToManyField(Profile, related_name='profiles')
+
+    class Meta:
+        verbose_name = 'Чат'
+        verbose_name_plural = 'Чаты'
+
+    def __str__(self):
+        return self.name
 
 # Сообщение в чате
 class Message(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT, blank=True, null=True)
-    chat = models.ForeignKey('Chat', on_delete=models.PROTECT, blank=True, null=True)
-    text = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    profile = models.ForeignKey(Profile, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Отправитель")
+    chat = models.ForeignKey('Chat', on_delete=models.PROTECT, blank=True, null=True, verbose_name="Чат")
+    text = models.CharField(max_length=255, verbose_name="Сообщение")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'

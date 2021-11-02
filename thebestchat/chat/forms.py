@@ -22,7 +22,7 @@ class RegisterForm(forms.Form):
     username = forms.CharField(max_length=10, required=True, label='Никнейм', validators=[
         RegexValidator(
             regex='^[a-zA-Z0-9]*$',
-            message='Может содержать только буквы и цифры',
+            message='Может содержать только латинские буквы и цифры',
             code='invalid_username'
         ),
     ])
