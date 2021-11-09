@@ -1,0 +1,1 @@
+web: gunicorn thebestchat.wsgi --log-file -
