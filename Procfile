@@ -1,1 +1,1 @@
-web: python thebestchat/manage.py runserver 0.0.0.0:80
+web: gunicorn thebestchat/thebestchat.wsgi --log-file -
