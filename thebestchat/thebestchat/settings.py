@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-#WSGI_APPLICATION = 'thebestchat.wsgi.application'
+WSGI_APPLICATION = 'thebestchat.wsgi.application'
 
 
 # Database
