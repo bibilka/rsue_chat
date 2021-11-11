@@ -5,7 +5,7 @@ const chatId = JSON.parse(document.getElementById('json-chat').textContent);
 const profileId = JSON.parse(document.getElementById('json-profile').textContent);
 
 let wsStart = 'ws://';
-if (window.location;.protocol == 'https:') {
+if (window.location.protocol == 'https:') {
      wsStart = 'wss://'
 }
 
