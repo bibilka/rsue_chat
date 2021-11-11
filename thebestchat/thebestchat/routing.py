@@ -4,9 +4,10 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 import chat.routing as routing
 from django.core.asgi import get_asgi_application
 import configparser
+from pathlib import Path
 
 config = configparser.ConfigParser()
-config.read('./config.ini')
+config.read(str(Path(__file__).resolve().parent.parent) + '/config.ini')
 
 if (config['Settings']['PRODUCTION_ENV'] == 'True'):
     application = ProtocolTypeRouter({

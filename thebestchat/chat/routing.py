@@ -1,9 +1,10 @@
 from django.urls import path
 from . import consumers
 import configparser
+from pathlib import Path
 
 config = configparser.ConfigParser()
-config.read('./config.ini')
+config.read(str(Path(__file__).resolve().parent.parent) + '/config.ini')
 
 if (config['Settings']['PRODUCTION_ENV'] == 'True'):
     websocket_urlpatterns = [
