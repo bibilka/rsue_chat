@@ -1,1 +1,1 @@
-web: gunicorn thebestchat.thebestchat.wsgi
+web: gunicorn --pythonpath=./thebestchat thebestchat.wsgi
