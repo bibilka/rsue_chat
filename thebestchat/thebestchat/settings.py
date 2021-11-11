@@ -12,15 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 import django_heroku
-import configparser
-
-config = configparser.ConfigParser()
-print("test" + str(os.environ.get('PROD_ENV')))
-config.read(str(Path(__file__).resolve().parent.parent) + '/config.ini')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -29,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3q+aiolfv1s5nz494f-x^@*)s_)!q-owb(#39$v($_&j3%%i50'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config['Settings']['DEBUG'] == 'True'
+DEBUG = os.environ.get('RSUECHAT_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     'thebestchat.local',
@@ -140,7 +134,7 @@ STATICFILES_DIRS = [
 
 ASGI_APPLICATION = "thebestchat.routing.application"
 
-if (config['Settings']['REDIS_ENABLE'] == 'True') or (config['Settings']['PRODUCTION_ENV'] == 'True'):
+if (os.environ.get('RSUECHAT_REDIS_ENABLE', 'False') == 'True') or (os.environ.get('RSUECHAT_PROD_ENV', 'False') == 'True'):
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -156,7 +150,7 @@ else:
         }
     }
 
-if (config['Settings']['REDIS_ENABLE'] == 'True') and (config['Settings']['PRODUCTION_ENV'] == 'True'):
+if (os.environ.get('RSUECHAT_REDIS_ENABLE', 'False') == 'True') and (os.environ.get('RSUECHAT_PROD_ENV', 'False') == 'True'):
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",

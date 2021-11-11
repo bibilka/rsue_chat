@@ -1,12 +1,9 @@
 from django.urls import path
 from . import consumers
-import configparser
 from pathlib import Path
+import os
 
-config = configparser.ConfigParser()
-config.read(str(Path(__file__).resolve().parent.parent) + '/config.ini')
-
-if (config['Settings']['PRODUCTION_ENV'] == 'True'):
+if (os.environ.get('RSUECHAT_PROD_ENV', 'False') == 'True'):
     websocket_urlpatterns = [
         path('ws/<str:chat_id>/', consumers.ChatConsumer.as_asgi()),
     ]
