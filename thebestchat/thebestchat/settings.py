@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'thebestchat.urls'
@@ -135,13 +136,12 @@ USE_TZ = True
 #     os.path.join(BASE_DIR, "static"),
 # ]
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'static'),
-    # Add to this list all the locations containing your static files
-)
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 ASGI_APPLICATION = "thebestchat.routing.application"
 
