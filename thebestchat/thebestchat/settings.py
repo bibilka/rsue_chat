@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
-ROOT_URLCONF = 'thebestchat.thebestchat.urls'
+ROOT_URLCONF = 'thebestchat.urls'
 
 TEMPLATES = [
     {
