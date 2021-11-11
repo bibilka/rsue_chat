@@ -136,20 +136,20 @@ STATICFILES_DIRS = [
 ]
 
 ASGI_APPLICATION = "thebestchat.routing.application"
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
-
 # CHANNEL_LAYERS = {
 #     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-#         },
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
 #     },
 # }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
+}
 
 # CHANNEL_LAYERS = {
 #     "default": {
@@ -157,19 +157,19 @@ CHANNEL_LAYERS = {
 #         "CONFIG": {
 #             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
 #         },
-#         "ROUTING": "chat.routing.channel_routing",
+#         "ROUTING": "thebsetchat.routing.channel_routing",
 #     },
 # }
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": os.environ.get('REDIS_URL'),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
