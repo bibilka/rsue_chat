@@ -15,7 +15,7 @@ import django_heroku
 import configparser
 
 config = configparser.ConfigParser()
-print(str(Path(__file__).resolve().parent.parent))
+print("test" + str(os.environ.get('PROD_ENV')))
 config.read(str(Path(__file__).resolve().parent.parent) + '/config.ini')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
