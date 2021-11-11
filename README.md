@@ -3,8 +3,8 @@
 
 ## Требования
 - [Python 3.9.x](https://www.python.org/downloads/)
-- [Redis Server](https://disk.yandex.ru/d/wxE9QgX8MMADTQ)
 - [Git](https://git-scm.com)
+- [Redis Server](https://disk.yandex.ru/d/wxE9QgX8MMADTQ) (не обязательно)
 
 ## Деплой проекта
 
@@ -21,7 +21,7 @@ python -m venv venv
 ```
 .\venv\Scripts\activate
 ```
-### 3. Настройка проекта (зависимости, миграции).
+### 3. Настройка проекта (env, зависимости, миграции).
 
 Подгружаем зависимости проекта (пакеты):
 ```
@@ -31,6 +31,8 @@ pip install -r requirements.txt
 ```
 cd thebestchat
 ```
+Выполняем команду: ```cp .env.example .env```. Затем редактируем параметры в конфигурационном файле `.env`, если требуется.
+
 Для настройки и заполнения базы данных с помощью миграций выполняем команды:
 ```
 python manage.py makemigrations
@@ -43,12 +45,14 @@ python manage.py createsuperuser
 
 ### 4. Запуск.
 
-Запускаем на локальной машине Redis сервер на порту 6379 (порт по умолчанию).
-
-После этого запускаем веб-сервер Django через команду:
+Запускаем веб-сервер Django через команду:
 ```
 python manage.py runserver 80
 ```
+#### Дополнительно:
+Если требуется использовать Redis:
+в файле `.env` указываем `REDIS_ENABLE=True` и запускаем Redis сервер на локальной машине на порту 6379 (порт по умолчанию).
+
 _____
 :white_check_mark: <b>Готово!</b> :+1: :tada: 
 
