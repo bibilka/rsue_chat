@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
-from thebestchat.chat.forms import RegisterForm, LoginForm, InviteForm
-from thebestchat.chat.models import Profile, Chat, Message
+from chat.forms import RegisterForm, LoginForm, InviteForm
+from chat.models import Profile, Chat, Message
 
 
 # обработка 404
