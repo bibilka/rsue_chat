@@ -1,10 +1,11 @@
 from django.urls import path
-from dotenv import load_dotenv
 from . import consumers
-import os
+import configparser
 
-load_dotenv()
-if (os.getenv("PRODUCTION_ENV") == 'True'):
+config = configparser.ConfigParser()
+config.read('./config.ini')
+
+if (config['Settings']['PRODUCTION_ENV'] == 'True'):
     websocket_urlpatterns = [
         path('ws/<str:chat_id>/', consumers.ChatConsumer.as_asgi()),
     ]

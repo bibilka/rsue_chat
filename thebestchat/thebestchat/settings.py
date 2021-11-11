@@ -12,9 +12,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 import django_heroku
-from dotenv import load_dotenv
+import configparser
 
-load_dotenv()
+config = configparser.ConfigParser()
+config.read('./config.ini')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3q+aiolfv1s5nz494f-x^@*)s_)!q-owb(#39$v($_&j3%%i50'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG") == 'True'
+DEBUG = config['Settings']['DEBUG'] == 'True'
 
 ALLOWED_HOSTS = [
     'thebestchat.local',
@@ -138,7 +139,7 @@ STATICFILES_DIRS = [
 
 ASGI_APPLICATION = "thebestchat.routing.application"
 
-if (os.getenv("REDIS_ENABLE") == 'True') or (os.getenv("PRODUCTION_ENV") == 'True'):
+if (config['Settings']['REDIS_ENABLE'] == 'True') or (config['Settings']['PRODUCTION_ENV'] == 'True'):
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -154,7 +155,7 @@ else:
         }
     }
 
-if (os.getenv("REDIS_ENABLE") == 'True') and (os.getenv("PRODUCTION_ENV") == 'True'):
+if (config['Settings']['REDIS_ENABLE'] == 'True') and (config['Settings']['PRODUCTION_ENV'] == 'True'):
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",

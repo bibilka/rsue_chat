@@ -3,12 +3,12 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 import chat.routing as routing
 from django.core.asgi import get_asgi_application
-from dotenv import load_dotenv
-import os
+import configparser
 
-load_dotenv()
+config = configparser.ConfigParser()
+config.read('./config.ini')
 
-if (os.getenv("PRODUCTION_ENV") == 'True'):
+if (config['Settings']['PRODUCTION_ENV'] == 'True'):
     application = ProtocolTypeRouter({
         'http': get_asgi_application(),
         'websocket': AuthMiddlewareStack(

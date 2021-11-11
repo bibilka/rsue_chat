@@ -1,8 +1,0 @@
-# использовать Redis Cache server в качестве channel
-REDIS_ENABLE=False
-
-# True - если продакшн сервер, иначе (дев, локалка) - False
-PRODUCTION_ENV=False
-
-# Режим дебага (рекомендуется False если PRODUCTION_ENV = True)
-DEBUG=True
