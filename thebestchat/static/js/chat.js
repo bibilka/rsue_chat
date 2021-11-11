@@ -4,8 +4,13 @@ let btnSubmit = document.querySelector("#btn-submit")
 const chatId = JSON.parse(document.getElementById('json-chat').textContent);
 const profileId = JSON.parse(document.getElementById('json-profile').textContent);
 
+let wsStart = 'ws://';
+if (window.location.protocol == 'https:') {
+     wsStart = 'wss://'
+}
+
 const chatSocket = new WebSocket(
-  'ws://'
+  wsStart
   + window.location.host
   + '/ws/'
   + chatId

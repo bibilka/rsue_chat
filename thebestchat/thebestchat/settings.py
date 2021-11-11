@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3q+aiolfv1s5nz494f-x^@*)s_)!q-owb(#39$v($_&j3%%i50'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == 'True'
 
 ALLOWED_HOSTS = [
     'thebestchat.local',
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -137,12 +138,12 @@ STATICFILES_DIRS = [
 
 ASGI_APPLICATION = "thebestchat.routing.application"
 
-if os.getenv("REDIS_ENABLE") == 'True':
+if (os.getenv("REDIS_ENABLE") == 'True') or (os.getenv("PRODUCTION_ENV") == 'True'):
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [('127.0.0.1', 6379)],
+                "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
             },
         },
     }
@@ -150,6 +151,17 @@ else:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
+    }
+
+if (os.getenv("REDIS_ENABLE") == 'True') and (os.getenv("PRODUCTION_ENV") == 'True'):
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ.get('REDIS_URL'),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
         }
     }
 
