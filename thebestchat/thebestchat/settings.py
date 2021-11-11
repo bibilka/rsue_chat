@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'chat.apps.ChatConfig',
+    'thebestchat.chat.apps.ChatConfig',
     'django_extensions'
 ]
 
