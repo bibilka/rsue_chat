@@ -4,7 +4,7 @@
 ## Требования
 - [Python 3.9.x](https://www.python.org/downloads/)
 - [Git](https://git-scm.com)
-- [Redis Server](https://disk.yandex.ru/d/wxE9QgX8MMADTQ) (не обязательно)
+- [Redis Server 5.0.9](https://github.com/tporadowski/redis/releases/tag/v5.0.9) (не обязательно)
 
 ## Деплой проекта
 
@@ -21,12 +21,12 @@ python -m venv venv
 ```
 .\venv\Scripts\activate
 ```
-### 3. Настройка проекта (env, зависимости, миграции).
-
 Подгружаем зависимости проекта (пакеты):
 ```
 pip install -r requirements.txt
 ```
+### 3. Настройка проекта (env, миграции).
+
 Переходим в папку приложения.
 ```
 cd thebestchat
@@ -51,7 +51,7 @@ python manage.py runserver 80
 ```
 #### Дополнительно:
 Если требуется использовать Redis:
-в файле `.env` указываем `REDIS_ENABLE=True` и запускаем Redis сервер на локальной машине на порту 6379 (порт по умолчанию).
+в файле `.env` указываем `RSUECHAT_REDIS_ENABLE=True` и запускаем Redis сервер на локальной машине на порту 6379 (порт по умолчанию).
 
 _____
 :white_check_mark: <b>Готово!</b> :+1: :tada: 
