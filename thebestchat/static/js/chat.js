@@ -67,3 +67,16 @@ btnSubmit.addEventListener("click", () => {
     }));
     input.value = '';
 })
+
+input.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        message = input.value;
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'profileId': profileId,
+            'chatId': chatId
+        }));
+        input.value = '';
+        document.getSelection().removeAllRanges();
+    }
+});
