@@ -18,6 +18,7 @@ def getChats(request):
             'id': chat.id,
             'friend_name': friend.get_name(),
             'friend_avatar': friend.avatar.url if friend.avatar else '',
+            'unreaded_messages': friend.messages(),
             'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
         })
     return chats
