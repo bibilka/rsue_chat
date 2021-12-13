@@ -72,10 +72,13 @@
 						<div class="row pt-1 pb-1 d-flex align-items-center friend"
 						type="button" value="Click" onmousedown="viewDialog({{ c.id }})" {% if c.id == chat %} style="background-color: #8eb4d4;transition: 0.6s;" {% endif %}>
 					        <div class="col-2">
-			         	 		<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
+			         	 		<img {% if c.friend_avatar %} src="{{ c.friend_avatar }}" {% else %}
+									src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+									 {% endif %}
+									class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
 							</div>
 					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">{{ c.friend }}</p>
+					            <p style="font-weight: bold">{{ c.friend_name }}</p>
 					            {% if c.id != chat %}
 									<p class="">{{ c.last_message.text }}</p>
 								{% else %}
@@ -102,23 +105,33 @@
 									{% if m.profile.id == user.profile.id %}
 										<div class="row mt-1">
 											<div class="col-3">
-												<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
+												{% if m.profile.avatar %}
+													<img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
+												{% else %}
+													<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
+												{% endif %}
 											</div>
 											<div class="col-5">
 												<p class="text-justify my-message" style="float: left">
 													{{ m.text }}
 												</p>
+												<span>{{ m.created_at }}</span>
 											</div>
 										</div>
 									{% else %}
 									<div class="row mt-1 d-flex flex-row-reverse">
 										<div class="col-3">
-											<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
+											{% if m.profile.avatar %}
+												<img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
+											{% else %}
+												<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
+											{% endif %}
 										</div>
 										<div class="col-5">
 											<p class="text-justify friend-message" style="float: right">
 												{{ m.text }}
 											</p>
+											<span>{{ m.created_at }}</span>
 										</div>
 									</div>
 									{% endif %}

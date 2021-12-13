@@ -33,7 +33,13 @@ function updateDialogColor(chat_id, profile_id)
 	    userColorsArray = JSON.parse(userColorsCookie)
 	}
 
-	userColorsArray.push({color: color, profile: profile_id, chat: chat_id})
+	existingColorSettings = userColorsArray.findIndex((obj => obj.chat == chat_id && obj.profile == profile_id));
+	if (existingColorSettings !== -1) {
+	    userColorsArray[existingColorSettings].color = color;
+	} else {
+	    userColorsArray.push({color: color, profile: profile_id, chat: chat_id})
+	}
+
 	setCookie('userColors',JSON.stringify(userColorsArray), 7);
 };
 

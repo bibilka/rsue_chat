@@ -12,6 +12,7 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
     chats = models.ManyToManyField('Chat', related_name='chats')
+    avatar = models.ImageField(null=True, blank=True, upload_to='images/profiles/')
 
     class Meta:
         verbose_name = 'Профиль'
