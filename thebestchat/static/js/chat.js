@@ -4,6 +4,15 @@ let btnSubmit = document.querySelector("#btn-submit")
 const chatId = JSON.parse(document.getElementById('json-chat').textContent);
 const profileId = JSON.parse(document.getElementById('json-profile').textContent);
 
+userColors = JSON.parse(getCookie('userColors'));
+if (userColors) {
+    selectedColor = userColors.find(o => (o.chat === chatId && o.profile === profileId));
+    if (selectedColor) {
+        document.getElementById('exampleColorInput').value = selectedColor.color;
+        document.getElementById('dialog').style.background = selectedColor.color;
+    }
+}
+
 let wsStart = 'ws://';
 if (window.location.protocol == 'https:') {
      wsStart = 'wss://'

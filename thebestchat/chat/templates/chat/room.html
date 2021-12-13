@@ -58,14 +58,15 @@
 							</div>
 						</div>
 					</div>
+					{% if chat %}
 					<div class="row p-2 mb-3" style="background-color: #DCDCDC">
 						<div class="col d-flex d-flex justify-content-center align-items-center">
 							<label for="exampleColorInput" class="form-label" style="margin-right: 20px; font-size: 20px; font-weight: bold;">Выберите цвет диалога</label>
 							<input type="color" class="form-control form-control-color" id="exampleColorInput" value="#8eb4d4" title="Choose your color" style="margin-right: 20px">
-							<button type="button" onClick="updateDialogColor()" class="btn btn-success">Сохранить</button>
+							<button type="button" onClick="updateDialogColor({{ chat }}, {{ user.profile.id }})" class="btn btn-success">Сохранить</button>
 						</div>
 					</div>
-
+					{% endif %}
 					<div class="friends">
 						{% for c in chats %}
 						<div class="row pt-1 pb-1 d-flex align-items-center friend"
@@ -144,6 +145,7 @@
 			</div>
 		</div>
 	</section>
+<script src="{% static 'js/scripts.js' %}"></script>
 {% if chat %}
 	{{ chat|json_script:"json-chat" }}
 	{{ profile|json_script:"json-profile" }}
@@ -165,6 +167,5 @@
 	setTimeout(sendit, 500);
 </script>
 {% endif %}
-<script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>
