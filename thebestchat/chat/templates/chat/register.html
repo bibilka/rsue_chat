@@ -38,7 +38,7 @@
                         <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                         <div class="form-outline flex-fill mb-0">
                           <input type="{{ f.field.widget.input_type }}" id="{{ f.id_for_label}}" name="{{ f.name }}" value="{{ f.value|default_if_none:'' }}" class="form-control {% if f.errors %}is-invalid{% endif %}" />
-                          <label class="form-label" for="{{ f.id_for_label}}">{{ f.label }}</label>
+                          <label class="form-label" for="{{ f.id_for_label}}">{% if f.field.required %}<b> {{ f.label }} *</b> {% else %} {{ f.label }} {% endif %}</label>
                           <div class="invalid-feedback">
                             {{ f.errors.0 }}
                           </div>

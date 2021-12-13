@@ -20,6 +20,12 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    def get_name(self):
+        if (self.user.first_name or self.user.last_name):
+            return self.user.get_full_name
+        else:
+            return self.user.username
+
     @staticmethod
     def messages():
         # todo: заглушка (кол-во непрочитанных сообщений)

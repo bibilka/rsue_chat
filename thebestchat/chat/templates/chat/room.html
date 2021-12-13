@@ -74,7 +74,7 @@
 			         	 		<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
 							</div>
 					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">{{ c.friend.user.username }}</p>
+					            <p style="font-weight: bold">{{ c.friend }}</p>
 					            {% if c.id != chat %}
 									<p class="">{{ c.last_message.text }}</p>
 								{% else %}

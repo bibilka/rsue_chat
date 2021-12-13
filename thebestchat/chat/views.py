@@ -73,7 +73,7 @@ def chat(request):
         for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
             chats.append({
                 'id': chat.id,
-                'friend': chat.profiles.exclude(user_id=request.user.id).first,
+                'friend': chat.profiles.exclude(user_id=request.user.id).first().get_name(),
                 'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
             })
 
@@ -97,7 +97,7 @@ def dialog(request, chat_id):
     for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
         chats.append({
             'id': chat.id,
-            'friend': chat.profiles.exclude(user_id=request.user.id).first,
+            'friend': chat.profiles.exclude(user_id=request.user.id).first().get_name(),
             'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
         })
 
@@ -151,7 +151,7 @@ def register(request):
 
         if form.is_valid():
             try:
-                user = User.objects.create(username=form.cleaned_data['username'])
+                user = form.save(commit=False)
                 user.set_password(form.cleaned_data['password'])
                 user.save()
 
