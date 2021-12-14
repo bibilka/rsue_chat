@@ -11,5 +11,6 @@ urlpatterns = [
     path('invite', invite, name='invite'),
 
     path('', chat, name='chat'),
-    path('<int:chat_id>', dialog, name='dialog')
+    path('<int:chat_id>', dialog, name='dialog'),
+
 ]
