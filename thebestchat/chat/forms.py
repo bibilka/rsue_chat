@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import RegexValidator
-from django.forms import PasswordInput
+from django.forms import PasswordInput, ModelForm
 
 from .models import *
 
@@ -17,17 +17,48 @@ class InviteForm(forms.Form):
 
 
 # форма регистрации
-class RegisterForm(forms.Form):
+class RegisterForm(ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['username', 'first_name', 'last_name']
 
-    username = forms.CharField(max_length=10, required=True, label='Никнейм', validators=[
+    username = forms.CharField(min_length=3, max_length=10, required=True, label='Никнейм', validators=[
         RegexValidator(
             regex='^[a-zA-Z0-9]*$',
             message='Может содержать только латинские буквы и цифры',
             code='invalid_username'
         ),
     ])
+    username.group = 1
+
+    first_name = forms.CharField(min_length=3, max_length=30, required=False, label='Имя', validators=[
+        RegexValidator(
+            regex='^[а-яА-Яa-zA-Z\s]{3,30}$',
+            message='Проверьте правильность введенных данных',
+            code='invalid_name'
+        )
+    ])
+    first_name.group = 2
+
+    last_name = forms.CharField(min_length=3, max_length=30, required=False, label='Фамилия', validators=[
+        RegexValidator(
+            regex='^[а-яА-Яa-zA-Z\s]{3,30}$',
+            message='Проверьте правильность введенных данных',
+            code='invalid_name'
+        )
+    ])
+    last_name.group = 2
+
     password = forms.CharField(widget=PasswordInput(), required=True, label='Пароль')
+    password.group = 1
     password_confirm = forms.CharField(widget=PasswordInput(), required=True, label='Повторите пароль')
+    password.group = 1
+
+    def required_fields(self):
+        return filter(lambda x: x.group == 1, self.fields.values())
+
+    def optional_fields(self):
+        return filter(lambda x: x.group == 2, self.fields.values())
 
     def clean(self):
         cleaned_data = super(RegisterForm, self).clean()

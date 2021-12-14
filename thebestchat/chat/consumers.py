@@ -3,6 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 from .models import Message, Profile, Chat
+from django.utils import formats
+from datetime import datetime
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -31,6 +33,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message.chat = Chat.objects.get(id=chat)
         message.save()
 
+    @database_sync_to_async
+    def get_profile_avatar(self, profile):
+        return Profile.objects.get(pk=profile).avatar
+
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
@@ -40,20 +46,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if (len(message) > 0):
             await self.new_message(message=message, profile=profile, chat=chat)
 
+            avatar = await self.get_profile_avatar(profile)
+
             await self.channel_layer.group_send(
                 self.chatName,
                 {
                     'type': 'chat_message',
-                    'message': message,
-                    'profileId': profile
+                    'message': {
+                        'text': message,
+                        'date': formats.date_format(datetime.now(), "DATETIME_FORMAT"),
+                    },
+                    'profile': {
+                        'id': profile,
+                        'avatar': avatar.url if avatar else '',
+                    }
                 }
             )
 
     async def chat_message(self, event):
         message = event['message']
-        profile = event['profileId']
+        profile = event['profile']
 
         await self.send(text_data=json.dumps({
             'message': message,
-            'profileId': profile
-        }, ensure_ascii=False))
+            'profile': profile
+        }, ensure_ascii=False, default=str))

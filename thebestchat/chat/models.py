@@ -12,6 +12,7 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
     chats = models.ManyToManyField('Chat', related_name='chats')
+    avatar = models.ImageField(null=True, blank=True, upload_to='images/profiles/')
 
     class Meta:
         verbose_name = 'Профиль'
@@ -19,6 +20,12 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def get_name(self):
+        if (self.user.first_name or self.user.last_name):
+            return self.user.get_full_name
+        else:
+            return self.user.username
 
     @staticmethod
     def messages():

@@ -9,6 +9,19 @@ from django.contrib.auth import authenticate, login, logout
 from chat.forms import RegisterForm, LoginForm, InviteForm
 from chat.models import Profile, Chat, Message
 
+# получение чатов пользователя
+def getChats(request):
+    chats = []
+    for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
+        friend = chat.profiles.exclude(user_id=request.user.id).first()
+        chats.append({
+            'id': chat.id,
+            'friend_name': friend.get_name(),
+            'friend_avatar': friend.avatar.url if friend.avatar else '',
+            'unreaded_messages': friend.messages(),
+            'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
+        })
+    return chats
 
 # обработка 404
 def pageNotFound(request, exception):
@@ -55,13 +68,7 @@ def invite(request):
             form.add_error(None, 'Произошла непредвиденная ошибка. Пожалуйста, обратитесь к администратору')
 
     # получаем все чаты пользователя с последним сообщением
-    chats = []
-    for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
-        chats.append({
-            'id': chat.id,
-            'friend': chat.profiles.exclude(user_id=request.user.id).first,
-            'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
-        })
+    chats = getChats(request)
 
     return render(request, 'chat/room.html', {'form': form, 'id': request.user.id, 'nickname': request.user.username, 'chats': chats})
 
@@ -69,13 +76,7 @@ def invite(request):
 def chat(request):
     if request.user.is_authenticated:
         # получаем все чаты пользователя с последним сообщением
-        chats = []
-        for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
-            chats.append({
-                'id': chat.id,
-                'friend': chat.profiles.exclude(user_id=request.user.id).first,
-                'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
-            })
+        chats = getChats(request)
 
         return render(request, 'chat/room.html', {'user': request.user, 'chats': chats})
 
@@ -92,14 +93,8 @@ def dialog(request, chat_id):
     if not Chat.objects.filter(profiles__id=request.user.profile.id).filter(id=chat_id).exists():
         raise PermissionDenied()
 
-    # получаем чаты пользователя и их последние сообщения
-    chats = []
-    for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
-        chats.append({
-            'id': chat.id,
-            'friend': chat.profiles.exclude(user_id=request.user.id).first,
-            'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
-        })
+    # получаем все чаты пользователя с последним сообщением
+    chats = getChats(request)
 
     messages = Message.objects.filter(chat=chat_id)
 
@@ -151,7 +146,7 @@ def register(request):
 
         if form.is_valid():
             try:
-                user = User.objects.create(username=form.cleaned_data['username'])
+                user = form.save(commit=False)
                 user.set_password(form.cleaned_data['password'])
                 user.save()
 
