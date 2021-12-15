@@ -1,7 +1,7 @@
 {% extends 'chat/base.html' %}
-
+{% load static %}
 {% block main-sector %}
-<div id="main-sector-chats" style="display: none">
+<div id="main-sector-chats" style="display: block">
 
     <nav class="navbar navbar-light bg-light rounded mt-1">
         <div class="container-fluid p-0 d-flex justify-content-start">
@@ -16,10 +16,10 @@
                 <a class="navbar-brand" href="#">
                     <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
                          alt="" width="30" height="30" class="d-inline-block align-text-top">
-                    {{ user.username }} id:{{ user.id }}
+                    {{ user.username }} <span id="user_id" style="font-size:0.7em"><b>ID:</b> {{ user.id }}</span>
                 </a>
             </div>
-
+            <hr>
 
             <div class="col-auto collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
@@ -49,24 +49,31 @@
         </div>
     </nav>
 
-
+{% for c in chats %}
     <div class="chat row mt-1 d-flex align-items-center" type="button" value="Click"
-         onmousedown="viewDialog()">
+         onmousedown="viewDialog({{ c.id }})" {% if c.id == chat %} style="background-color: #8eb4d4;transition: 0.6s;" {% endif %}>
         <div class="col-auto">
-            <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+            <img {% if c.friend_avatar %} src="{{ c.friend_avatar }}" {% else %}
+									src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+									 {% endif %}
                  class="rounded-circle img-fluid" alt="Аватар" height="55" width="55">
         </div>
         <div class="col-auto me-auto d-flex flex-column">
-            <span style="font-weight: bold">{{ user.username }}</span>
+            <span style="font-weight: bold">{{ c.friend_name }}</span>
             <!-- TO DO СДЕЛАТЬ GET_STR_15 ДЛЯ ОГРАНИЧЕНИЯ ВЫВОДА СООБЩЕНИЯ -->
-            <span class="">{ c.last_message.text }</span>
+            {% if c.id != chat %}
+                <span class="">{{ c.last_message.text }}</span>
+            {% else %}
+                <span class=""><span id="typing-animation"></span></span>
+            {% endif %}
+
         </div>
         <div class="col-auto d-flex align-items-end flex-column">
-            <span class="text-secondary">13:10</span>
-            <span class="m-1 badge bg-light-green rounded-pill">1</span>
+            <span class="text-secondary">{{ c.last_message.time }}</span>
+            <span class="m-1 badge bg-light-green rounded-pill">{{ c.unreaded_messages }}</span>
         </div>
     </div>
-
+{% endfor %}
 </div>
 
 <div id="main-sector-settings" style="display: none">
@@ -138,7 +145,7 @@
 
 </div>
 
-<div id="main-sector-friends" style="display: block">
+<div id="main-sector-friends" style="display: none">
 
     <div class="row p-3">
         <div class="col-auto pt-1 rounded-pill" id="arrow-back-friends" style="cursor: pointer;">
@@ -152,20 +159,24 @@
             <p class="font-weight-bold font-monospace h5 text-secondary" style="font-weight: 700">Настройки</p>
         </div>
     </div>
+    <form action="{% url 'invite' %}" method="post">
+        <div class="row">
+            <div class="col">
+                <div class="input-group mt-3 border rounded-pill p-2 ">
 
-    <div class="row">
-        <div class="col">
-            <div class="input-group mt-3 border rounded-pill p-2 ">
-                <input type="number" placeholder="Введите id пользователя" aria-describedby="button-addon3"
-                       class="form-control bg-none rounded-pill" required name="friend" aria-label="Search">
-                <div class="input-group-append border-0">
-                    <button id="button-addon3" type="submit" class="btn btn-link text-secondary">
-                        <i class="fa fa-search"></i>
-                    </button>
+                    {% csrf_token %}
+                        <input type="number" placeholder="Введите id пользователя" aria-describedby="button-addon3"
+                               class="form-control bg-none rounded-pill" required name="friend" aria-label="Search">
+                        <div class="input-group-append border-0">
+                            <button id="button-addon3" type="submit" class="btn btn-link text-secondary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+
                 </div>
             </div>
         </div>
-    </div>
+     </form>
     <div class="row mt-3 d-flex justify-content-center flex-column">
         <div class="col">
             <p class="alert alert-warning rounded-pill text-center">У вас нет заявок в друзья</p>
@@ -195,7 +206,69 @@
 
 
 {% block chat-sector %}
+{% if chat %}
+<div class="col-8" id="dialog" style="background-color: #8eb4d4; height: 100vh;">
+
+    <div id="dialogContent">
+
+        <div class="row" id="messages" style="height: 90vh; overflow: auto;">
+            <div class="col" id="chat">
+
+                {% for m in chatMessages %}
+                    {% if m.profile.id == user.profile.id %}
+                        <div class="row mt-1">
+                            <div class="col-3">
+                                {% if m.profile.avatar %}
+                                    <img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
+                                {% else %}
+                                    <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
+                                {% endif %}
+                            </div>
+                            <div class="col-5">
+                                <p class="text-justify my-message" style="float: left">
+                                    {{ m.text }}
+                                </p>
+                                <span>{{ m.created_at }}</span>
+                            </div>
+                        </div>
+                    {% else %}
+                    <div class="row mt-1 d-flex flex-row-reverse">
+                        <div class="col-3">
+                            {% if m.profile.avatar %}
+                                <img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
+                            {% else %}
+                                <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
+                            {% endif %}
+                        </div>
+                        <div class="col-5">
+                            <p class="text-justify friend-message" style="float: right">
+                                {{ m.text }}
+                            </p>
+                            <span>{{ m.created_at }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
 
 
+        <div class="row d-flex justify-content-center p-3">
+            <div class="col-7">
+                <textarea class="form-control" id="message-input" placeholder="Ваше сообщение" id="exampleFormControlTextarea1" rows="1"></textarea>
+            </div>
+
+            <div class="col-1">
+                <button type="submit" id="btn-submit" type="button" value="Send" class="btn btn-outline-primary rounded-circle d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                    <img src="{% static 'images/send.png' %}">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
+
+
 <!--<p class="text-break">mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</p>-->

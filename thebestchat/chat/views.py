@@ -9,17 +9,23 @@ from django.contrib.auth import authenticate, login, logout
 from chat.forms import RegisterForm, LoginForm, InviteForm
 from chat.models import Profile, Chat, Message
 
+from django.utils.timezone import localtime
+
 # получение чатов пользователя
 def getChats(request):
     chats = []
     for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
         friend = chat.profiles.exclude(user_id=request.user.id).first()
+        last_message = Message.objects.filter(chat_id=chat.id).order_by('-id').first()
         chats.append({
             'id': chat.id,
             'friend_name': friend.get_name(),
             'friend_avatar': friend.avatar.url if friend.avatar else '',
             'unreaded_messages': friend.messages(),
-            'last_message': Message.objects.filter(chat_id=chat.id).order_by('-id').first()
+            'last_message': {
+                'text': last_message.text,
+                'time': localtime(last_message.created_at).time()
+            }
         })
     return chats
 
