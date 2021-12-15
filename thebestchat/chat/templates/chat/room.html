@@ -1,184 +1,201 @@
-<!DOCTYPE html>
-<html>
-<head>
-	{% load static %}
+{% extends 'chat/base.html' %}
 
-	<title>Online chat</title>
-	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-	<link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-</head>
-<body>
-<section class="body">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-4 bg-light part">
-					<div class="search row">
-							<div class="row mt-3 mb-3">
-								<div class="col">
-								{% if form.non_field_errors %}
-								<div class="alert alert-warning" role="alert">
-									<b>Ошибка. </b>{{ form.non_field_errors.0 }}
-								</div>
-								{% endif %}
-								{% if messages %}
-								  {% for msg in messages %}
-								  <div class="alert alert-{{msg.level_tag}} " role="alert">
-									  {{msg.message}}
-								  </div>
-								  {% endfor %}
-							  	{% endif %}
-								<form action="{% url 'invite' %}" method="post">
-									{% csrf_token %}
-									<div class="row">
-										<div class="col-4">
-											<div class="alert alert-primary nickname" role="alert">
-												Профиль: <b>{{ user.username }}</b> <a href="{% url 'logout' %}">(выйти)</a>
-											</div>
-										</div>
-										<div class="col">
+{% block main-sector %}
+<div id="main-sector-chats" style="display: none">
 
-											<div class="input-group">
+    <nav class="navbar navbar-light bg-light rounded mt-1">
+        <div class="container-fluid p-0 d-flex justify-content-start">
+            <div class="col-auto">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <div class="col-auto" style="margin-left: 10px;">
+                <a class="navbar-brand" href="#">
+                    <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+                         alt="" width="30" height="30" class="d-inline-block align-text-top">
+                    {{ user.username }} id:{{ user.id }}
+                </a>
+            </div>
 
 
-												<div class="input-group-prepend">
-													<div class="input-group-text">Ваш ID: {{ user.id }}</div>
-												</div>
-												<input type="number" class="form-control" placeholder="ID друга" required name="friend" aria-label="Search" aria-describedby="button-addon2">
+            <div class="col-auto collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item" id="friends-link">
+                        <a class="nav-link" href="#">Друзья</a>
+                    </li>
+                    <li class="nav-item" id="settings-link">
+                        <a class="nav-link" href="#">Настройки</a>
+                    </li>
 
-												<button class="btn btn-outline-primary w-5 d-flex align-items-center" type="submit" id="button-addon2">
-													Пригласить
-												</button>
-											</div>
-										</div>
-									</div>
-
-								</form>
-							</div>
-						</div>
-					</div>
-					{% if chat %}
-					<div class="row p-2 mb-3" style="background-color: #DCDCDC">
-						<div class="col d-flex d-flex justify-content-center align-items-center">
-							<label for="exampleColorInput" class="form-label" style="margin-right: 20px; font-size: 20px; font-weight: bold;">Выберите цвет диалога</label>
-							<input type="color" class="form-control form-control-color" id="exampleColorInput" value="#8eb4d4" title="Choose your color" style="margin-right: 20px">
-							<button type="button" onClick="updateDialogColor({{ chat }}, {{ user.profile.id }})" class="btn btn-success">Сохранить</button>
-						</div>
-					</div>
-					{% endif %}
-					<div class="friends">
-						{% for c in chats %}
-						<div class="row pt-1 pb-1 d-flex align-items-center friend"
-						type="button" value="Click" onmousedown="viewDialog({{ c.id }})" {% if c.id == chat %} style="background-color: #8eb4d4;transition: 0.6s;" {% endif %}>
-					        <div class="col-2">
-			         	 		<img {% if c.friend_avatar %} src="{{ c.friend_avatar }}" {% else %}
-									src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
-									 {% endif %}
-									class="rounded-circle img-fluid mr-3" alt="Аватар" height="70" width="70">
-							</div>
-					        <div class="col-8 mt-3">
-					            <p style="font-weight: bold">{{ c.friend_name }}</p>
-					            {% if c.id != chat %}
-									<p class="">{{ c.last_message.text }}</p>
-								{% else %}
-									<p class=""><div id="typing-animation"></div></p>
-								{% endif %}
-			          		</div>
-							<div class="col-2 d-flex justify-content-end">
-								<span class="badge bg-secondary">{{ c.unreaded_messages }}</span>
-							</div>
-						</div>
-						{% endfor %}
-					</div>
-				</div>
+                    <li class="nav-item row">
+                        <div class="col-8">
+                            <a class="nav-link" href="#">Тёмная тема</a>
+                        </div>
+                        <div class="col-3 d-flex align-items-center">
+                            <input type="checkbox" name="checkbox1" id="checkbox1" class="ios-toggle"
+                                   checked/>
+                            <label for="checkbox1" class="checkbox-label" data-off="off"
+                                   data-on="on"></label>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="text-danger nav-link" href="{% url 'logout' %}">Выйти из профиля</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
 
-				<div class="col-8" id="dialog" style="background-color: #8eb4d4; height: 100vh;">
-					{% if chat %}
-					<div id="dialogContent">
+    <div class="chat row mt-1 d-flex align-items-center" type="button" value="Click"
+         onmousedown="viewDialog()">
+        <div class="col-auto">
+            <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+                 class="rounded-circle img-fluid" alt="Аватар" height="55" width="55">
+        </div>
+        <div class="col-auto me-auto d-flex flex-column">
+            <span style="font-weight: bold">{{ user.username }}</span>
+            <!-- TO DO СДЕЛАТЬ GET_STR_15 ДЛЯ ОГРАНИЧЕНИЯ ВЫВОДА СООБЩЕНИЯ -->
+            <span class="">{ c.last_message.text }</span>
+        </div>
+        <div class="col-auto d-flex align-items-end flex-column">
+            <span class="text-secondary">13:10</span>
+            <span class="m-1 badge bg-light-green rounded-pill">1</span>
+        </div>
+    </div>
 
-						<div class="row" id="messages" style="height: 90vh; overflow: auto;">
-							<div class="col" id="chat">
+</div>
 
-								{% for m in chatMessages %}
-									{% if m.profile.id == user.profile.id %}
-										<div class="row mt-1">
-											<div class="col-3">
-												{% if m.profile.avatar %}
-													<img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
-												{% else %}
-													<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
-												{% endif %}
-											</div>
-											<div class="col-5">
-												<p class="text-justify my-message" style="float: left">
-													{{ m.text }}
-												</p>
-												<span>{{ m.created_at }}</span>
-											</div>
-										</div>
-									{% else %}
-									<div class="row mt-1 d-flex flex-row-reverse">
-										<div class="col-3">
-											{% if m.profile.avatar %}
-												<img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
-											{% else %}
-												<img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
-											{% endif %}
-										</div>
-										<div class="col-5">
-											<p class="text-justify friend-message" style="float: right">
-												{{ m.text }}
-											</p>
-											<span>{{ m.created_at }}</span>
-										</div>
-									</div>
-									{% endif %}
-								{% endfor %}
-
-							</div>
-						</div>
+<div id="main-sector-settings" style="display: none">
+    <div class="row p-3">
+        <div class="col-auto pt-1 rounded-pill" id="arrow-back-settings" style="cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="grey" class="bi bi-arrow-left"
+                 viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                      d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+        </div>
+        <div class="col-auto pt-2">
+            <p class="font-weight-bold font-monospace h5 text-secondary" style="font-weight: 700">Настройки</p>
+        </div>
+    </div>
 
 
-						<div class="row d-flex justify-content-center p-3">
-							<div class="col-7">
-						    	<textarea class="form-control" id="message-input" placeholder="Ваше сообщение" id="exampleFormControlTextarea1" rows="1"></textarea>
-			  				</div>
+    <form class="form-inline">
+        <div class="row d-flex justify-content-center" id="profile-avatar">
+            <div class="col-auto" style="cursor: pointer;">
+                <button id="button-addon3" type="submit" class="btn rounded-pill btn-link text-secondary">
+                    <i class="fa fa-camera fa-2x"></i>
+                </button>
+                <input id="input-profile-avatar" type="file" name="avatar-image" accept="image/*"
+                       style="display: none;"/>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center mt-5">
+            <div class="col-10">
+                <div class="form-group">
+                    <label class="text-muted">Никнейм</label>
+                    <input type="text" value="test123" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center mt-3">
+            <div class="col-10">
+                <div class="form-group">
+                    <label for="inputPassword6" class="text-muted">Пароль</label>
+                    <input type="password" id="inputPassword6" class="form-control"
+                           aria-describedby="passwordHelpInline">
+                    <small id="passwordHelpInline" class="text-muted">
+                        Must be 8-20 characters long.
+                    </small>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-5">
+        <div class="row mt-3 d-flex justify-content-center">
+            <div class="col-10 d-flex justify-content-between align-items-center">
+                <span>Выберите цвет фона</span>
+                <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#8eb4d4"
+                       title="Choose your color">
+                <button type="button" onClick="updateDialogColor({{ chat }}, {{ user.profile.id }})"
+                        class="btn bg-light-green rounded-pill">
+                    <i class="fa fa-check fa-1x" style="color: white;"
+                       aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <hr class="mt-3">
+        <div class="row d-flex justify-content-center mt-5">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-secondary">Сохранить</button>
+            </div>
+        </div>
 
-					  		<div class="col-1">
-					  			<button type="submit" id="btn-submit" type="button" value="Send" class="btn btn-outline-primary rounded-circle d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
-					  				<img src="{% static 'images/send.png' %}">
-					  			</button>
-							</div>
-						</div>
-					</div>
-					{% endif %}
-				</div>
-			</div>
-		</div>
-	</section>
-<script src="{% static 'js/scripts.js' %}"></script>
-{% if chat %}
-	{{ chat|json_script:"json-chat" }}
-	{{ profile|json_script:"json-profile" }}
-	<script src="{% static 'js/chat.js' %}"></script>
-<script src="{% static 'js/typeit.min.js' %}"></script>
-<script>
-	typeitObj = new TypeIt('#typing-animation', {
-	  strings: "печатает...",
-	  speed: 100
-	})
-	function sendit()
-	{
-		typeitObj.reset();
-		typeitObj.go();
-		// Call sendit() the next time, repeating
-		setTimeout(sendit, 2500);
-	}
-	// Call sendit() the first time
-	setTimeout(sendit, 500);
-</script>
-{% endif %}
-</body>
-</html>
+    </form>
+
+</div>
+
+<div id="main-sector-friends" style="display: block">
+
+    <div class="row p-3">
+        <div class="col-auto pt-1 rounded-pill" id="arrow-back-friends" style="cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="grey" class="bi bi-arrow-left"
+                 viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                      d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+        </div>
+        <div class="col-auto pt-2">
+            <p class="font-weight-bold font-monospace h5 text-secondary" style="font-weight: 700">Настройки</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="input-group mt-3 border rounded-pill p-2 ">
+                <input type="number" placeholder="Введите id пользователя" aria-describedby="button-addon3"
+                       class="form-control bg-none rounded-pill" required name="friend" aria-label="Search">
+                <div class="input-group-append border-0">
+                    <button id="button-addon3" type="submit" class="btn btn-link text-secondary">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3 d-flex justify-content-center flex-column">
+        <div class="col">
+            <p class="alert alert-warning rounded-pill text-center">У вас нет заявок в друзья</p>
+        </div>
+        <div class="col-12"></div>
+        <div class="col mt-5 d-flex justify-content-center friend-card">
+            <div class="card bg-none" style="width: 18rem; border-radius: 30px;">
+                <div class="mt-3 mb-3 d-flex justify-content-center">
+                    <div class="friend-avatar rounded-pill"></div>
+                </div>
+                <p class="text-center h4">Egor id: 1</p>
+                <div class="card-body d-flex justify-content-around">
+                    <button class="btn btn-danger rounded-pill" style="width: 58px;">
+                        <i class="fa fa-times fa-2x" style="color: white;"></i>
+                    </button>
+                    <button class="btn bg-light-green rounded-pill">
+                        <i class="fa fa-check fa-2x" style="color: white;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block chat-sector %}
+
+
+{% endblock %}
+<!--<p class="text-break">mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</p>-->
