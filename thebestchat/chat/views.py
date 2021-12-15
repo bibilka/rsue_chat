@@ -6,10 +6,43 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
-from chat.forms import RegisterForm, LoginForm, InviteForm
+from chat.forms import RegisterForm, LoginForm, InviteForm, ProfileSettingsForm
 from chat.models import Profile, Chat, Message
 
 from django.utils.timezone import localtime
+
+# изменение настроек профиля
+def profileSettings(request):
+    if not request.user.is_authenticated:
+        return redirect('logout')
+
+    if request.method != 'POST':
+        profile_settings_form = ProfileSettingsForm()
+    else:
+        profile_settings_form = ProfileSettingsForm(request.POST, request.FILES)
+        if profile_settings_form.is_valid():
+
+            password = profile_settings_form.cleaned_data.get("password")
+            img = profile_settings_form.cleaned_data.get("avatar")
+            if (password):
+                user = request.user
+                user.set_password(password)
+                user.save()
+                login(request, authenticate(request, username=user.username, password=password))
+
+            profile = request.user.profile;
+            profile.avatar = img
+            profile.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Настройки успешно сохранены.')
+
+        else:
+            profile_settings_form.add_error(None, 'Произошла ошибка. Проверьте правильность введеных данных.')
+
+    # получаем все чаты пользователя с последним сообщением
+    chats = getChats(request)
+
+    return render(request, 'chat/room.html', {'profile_settings_form': profile_settings_form, 'show_settings_form': True, 'user': request.user,'chats': chats})
 
 # получение чатов пользователя
 def getChats(request):
@@ -76,7 +109,9 @@ def invite(request):
     # получаем все чаты пользователя с последним сообщением
     chats = getChats(request)
 
-    return render(request, 'chat/room.html', {'form': form, 'id': request.user.id, 'nickname': request.user.username, 'chats': chats})
+    profile_settings_form = ProfileSettingsForm()
+
+    return render(request, 'chat/room.html', {'form': form, 'profile_settings_form': profile_settings_form, 'id': request.user.id, 'nickname': request.user.username, 'chats': chats})
 
 # чат
 def chat(request):
@@ -84,7 +119,9 @@ def chat(request):
         # получаем все чаты пользователя с последним сообщением
         chats = getChats(request)
 
-        return render(request, 'chat/room.html', {'user': request.user, 'chats': chats})
+        profile_settings_form = ProfileSettingsForm()
+
+        return render(request, 'chat/room.html', {'user': request.user, 'show_chats': True, 'profile_settings_form': profile_settings_form, 'chats': chats})
 
     return redirect('auth')
 
@@ -104,7 +141,9 @@ def dialog(request, chat_id):
 
     messages = Message.objects.filter(chat=chat_id)
 
-    return render(request, 'chat/room.html', {'chat': chat_id, 'chats': chats, 'profile': request.user.profile.id, 'chatMessages': messages})
+    profile_settings_form = ProfileSettingsForm()
+
+    return render(request, 'chat/room.html', {'chat': chat_id, 'show_chats': True, 'profile_settings_form': profile_settings_form, 'chats': chats, 'profile': request.user.profile.id, 'chatMessages': messages})
 
 # авторизация
 def auth(request):

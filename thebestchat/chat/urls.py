@@ -13,4 +13,6 @@ urlpatterns = [
     path('', chat, name='chat'),
     path('<int:chat_id>', dialog, name='dialog'),
 
+    path('profileSettings', profileSettings, name='profileSettings')
+
 ]

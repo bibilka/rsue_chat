@@ -1,7 +1,7 @@
 {% extends 'chat/base.html' %}
 {% load static %}
 {% block main-sector %}
-<div id="main-sector-chats" style="display: block">
+<div id="main-sector-chats" {% if show_chats %}style="display: block"{%else%}style="display: none"{%endif%}>
 
     <nav class="navbar navbar-light bg-light rounded mt-1">
         <div class="container-fluid p-0 d-flex justify-content-start">
@@ -14,7 +14,11 @@
             </div>
             <div class="col-auto" style="margin-left: 10px;">
                 <a class="navbar-brand" href="#">
-                    <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+                    <img {% if user.profile.avatar %}
+                         src="{{ user.profile.avatar.url }}"
+                         {% else %}
+                         src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
+                         {% endif %}
                          alt="" width="30" height="30" class="d-inline-block align-text-top">
                     {{ user.username }} <span id="user_id" style="font-size:0.7em"><b>ID:</b> {{ user.id }}</span>
                 </a>
@@ -76,7 +80,7 @@
 {% endfor %}
 </div>
 
-<div id="main-sector-settings" style="display: none">
+<div id="main-sector-settings" {% if show_settings_form %}style="display: block"{%else%}style="display: none"{%endif%}>
     <div class="row p-3">
         <div class="col-auto pt-1 rounded-pill" id="arrow-back-settings" style="cursor: pointer;">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="grey" class="bi bi-arrow-left"
@@ -91,33 +95,56 @@
     </div>
 
 
-    <form class="form-inline">
+    <form class="form-inline" action="{% url 'profileSettings' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if profile_settings_form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in profile_settings_form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if profile_settings_form.avatar.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in profile_settings_form.avatar.errors %}
+            <b>Аватар:</b> {{ error }}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if messages %}
+          {% for msg in messages %}
+          <div class="alert alert-{{msg.level_tag}} " role="alert">
+              {{msg.message}}
+          </div>
+          {% endfor %}
+        {% endif %}
         <div class="row d-flex justify-content-center" id="profile-avatar">
             <div class="col-auto" style="cursor: pointer;">
-                <button id="button-addon3" type="submit" class="btn rounded-pill btn-link text-secondary">
+                <button type="button" id="button-addon-avatar" class="btn rounded-pill text-secondary" style="background:url('{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat;">
                     <i class="fa fa-camera fa-2x"></i>
                 </button>
-                <input id="input-profile-avatar" type="file" name="avatar-image" accept="image/*"
+                <input id="input-profile-avatar" onchange="readURL(this);" type="file" name="avatar" accept="image/*"
                        style="display: none;"/>
+
             </div>
         </div>
         <div class="row d-flex justify-content-center mt-5">
             <div class="col-10">
                 <div class="form-group">
                     <label class="text-muted">Никнейм</label>
-                    <input type="text" value="test123" class="form-control">
+                    <input type="text" value="{{ user.username }}" disabled class="form-control">
                 </div>
             </div>
         </div>
         <div class="row d-flex justify-content-center mt-3">
             <div class="col-10">
                 <div class="form-group">
-                    <label for="inputPassword6" class="text-muted">Пароль</label>
-                    <input type="password" id="inputPassword6" class="form-control"
-                           aria-describedby="passwordHelpInline">
-                    <small id="passwordHelpInline" class="text-muted">
-                        Must be 8-20 characters long.
-                    </small>
+                    <label for="inputPassword6" class="text-muted">Изменить пароль</label>
+                    <input type="password" id="inputPassword6" class="form-control {% if profile_settings_form.password.errors %}is-invalid{% endif %}"
+                           aria-describedby="passwordHelpInline" name="password" value="{{ profile_settings_form.password.value|default_if_none:user.password }}">
+                    {% if profile_settings_form.password.errors %}<small id="passwordHelpInline" class="text-muted">
+                        {{ profile_settings_form.password.errors.0 }}
+                    </small>{% endif %}
                 </div>
             </div>
         </div>
@@ -145,7 +172,7 @@
 
 </div>
 
-<div id="main-sector-friends" style="display: none">
+<div id="main-sector-friends" {% if show_friends %}style="display: block"{%else%}style="display: none"{%endif%}>
 
     <div class="row p-3">
         <div class="col-auto pt-1 rounded-pill" id="arrow-back-friends" style="cursor: pointer;">

@@ -14,6 +14,15 @@ class Profile(models.Model):
     chats = models.ManyToManyField('Chat', related_name='chats')
     avatar = models.ImageField(null=True, blank=True, upload_to='images/profiles/')
 
+    def save(self, *args, **kwargs):
+        try:
+            this = Profile.objects.get(id=self.id)
+            if this.avatar != self.avatar:
+                this.avatar.delete()
+        except:
+            pass
+        super(Profile, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'Профиль'
         verbose_name_plural = 'Список профилей'

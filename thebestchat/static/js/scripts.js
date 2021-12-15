@@ -78,3 +78,19 @@ document.getElementById('profile-avatar').addEventListener('click', function()
     let input = document.getElementById('input-profile-avatar');
     input.click();
 });
+
+/*  ==========================================
+    SHOW UPLOADED IMAGE
+* ========================================== */
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            url = e.target.result
+            $('#button-addon-avatar')
+                .attr('style', 'background:url("'+url+'"), no-repeat;');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}

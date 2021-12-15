@@ -82,3 +82,8 @@ class RegisterForm(ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=10, required=True, label='Никнейм')
     password = forms.CharField(widget=PasswordInput(), required=True, label='Пароль')
+
+# форма настроек пользователя
+class ProfileSettingsForm(forms.Form):
+    password = forms.CharField(widget=PasswordInput(), min_length=3, max_length=30, required=True, label='Пароль')
+    avatar = forms.ImageField(required=False)
