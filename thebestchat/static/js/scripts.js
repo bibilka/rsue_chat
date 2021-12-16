@@ -89,7 +89,7 @@ function readURL(input) {
         reader.onload = function (e) {
             url = e.target.result
             $('#button-addon-avatar')
-                .attr('style', 'background:url("'+url+'"), no-repeat;');
+                .attr('style', 'background:url("'+url+'"), no-repeat; background-size: cover;');
         };
         reader.readAsDataURL(input.files[0]);
     }

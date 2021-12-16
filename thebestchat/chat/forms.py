@@ -86,4 +86,18 @@ class LoginForm(forms.Form):
 # форма настроек пользователя
 class ProfileSettingsForm(forms.Form):
     password = forms.CharField(widget=PasswordInput(), min_length=3, max_length=30, required=True, label='Пароль')
+    first_name = forms.CharField(min_length=3, max_length=30, required=False, label='Имя', validators=[
+        RegexValidator(
+            regex='^[а-яА-Яa-zA-Z\s]{3,30}$',
+            message='Проверьте правильность введенных данных',
+            code='invalid_name'
+        )
+    ])
+    last_name = forms.CharField(min_length=3, max_length=30, required=False, label='Фамилия', validators=[
+        RegexValidator(
+            regex='^[а-яА-Яa-zA-Z\s]{3,30}$',
+            message='Проверьте правильность введенных данных',
+            code='invalid_name'
+        )
+    ])
     avatar = forms.ImageField(required=False)

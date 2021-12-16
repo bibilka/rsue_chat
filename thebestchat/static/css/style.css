@@ -41,16 +41,16 @@
     border: 2px solid #6c757d;
     width: 100px;
     height: 100px;
-    /*background: url("https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"), no-repeat;*/
-    background-size: cover;
+    /*background: url("https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"), no-repeat;
+    background-size: cover;*/
 }
 
 .friend-avatar {
     border: 2px solid #6c757d;
     width: 100px;
     height: 100px;
-    background: url("https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"), no-repeat;
-    background-size: cover;
+    /*background: url("https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"), no-repeat;
+    background-size: cover;*/
 }
 textarea {
   font-size: 28px;

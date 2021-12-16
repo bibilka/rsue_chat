@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from random import randint
+from datetime import datetime
 
 # Профиль пользователя
 class Profile(models.Model):
@@ -49,6 +50,15 @@ class Profile(models.Model):
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
         instance.profile.save()
+
+# заявка в друзья
+class FriendRequest(models.Model):
+    request_sender = models.ForeignKey('Profile', on_delete=models.PROTECT, verbose_name="Отправитель", related_name='request_sender_profile')
+    request_receiver = models.ForeignKey('Profile', on_delete=models.PROTECT, verbose_name="Получатель", related_name='request_receiver_profile')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    class Meta:
+        verbose_name = 'Заявка в друзья'
+        verbose_name_plural = 'Заявки в друзья'
 
 # Чат
 class Chat(models.Model):
