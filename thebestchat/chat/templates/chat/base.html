@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/light.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}"/>
     <title>Online Chat</title>
 </head>
@@ -21,7 +22,7 @@
 
         </div>
 
-        <div class="col chat" id="dialog" style="width: 100px; height: 100vh;">
+        <div class="col chat" id="dialog" style="max-height: 100vh; background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5)); width: 100px; height: 100vh;">
             {% block chat-sector %}
             {% endblock %}
         </div>

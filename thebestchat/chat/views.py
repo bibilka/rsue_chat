@@ -164,8 +164,8 @@ def getChats(request):
         friend = chat.profiles.exclude(user_id=request.user.id).first()
         last_message = Message.objects.filter(chat_id=chat.id).order_by('-id').first()
         if last_message:
-            if len(last_message.text) > 40:
-                t_last_message = last_message.text[:40] + "..."
+            if len(last_message.text) > 20:
+                t_last_message = last_message.text[:20] + "..."
             else:
                 t_last_message = last_message.text
         else:

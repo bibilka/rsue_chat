@@ -44,8 +44,8 @@
                         <div class="col-3 d-flex align-items-center">
                             <input type="checkbox" name="checkbox1" id="checkbox1" class="ios-toggle"
                                    checked/>
-                            <label for="checkbox1" class="checkbox-label" data-off="off"
-                                   data-on="on"></label>
+                            <label for="checkbox1" id="" class="checkbox-label" data-off="on"
+                                   data-on="off"></label>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -72,14 +72,14 @@
 <hr class="mt-3">
 {% endif %}
 {% for c in chats %}
-    <div class="chat row mt-1 d-flex align-items-center" type="button" value="Click"
-         onmousedown="viewDialog({{ c.id }})" {% if c.id == chat %} style="background-color: #8eb4d4;transition: 0.6s;" {% endif %}>
-        <div class="col-auto">
+    <div class="chat row d-flex align-items-center friend-chat rounded" type="button" value="Click"
+         onmousedown="viewDialog({{ c.id }})" {% if c.id == chat %} style="background-color: #7b9ebe;" {% endif %}>
+        <div class="col-auto p-2">
             <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 55px; height: 55px; background:url('{% if c.friend_avatar %}{{ c.friend_avatar }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
         </div>
         <div class="col-auto me-auto d-flex flex-column">
             <span style="font-weight: bold">{{ c.friend_name }}</span>
-            <!-- TO DO СДЕЛАТЬ GET_STR_15 ДЛЯ ОГРАНИЧЕНИЯ ВЫВОДА СООБЩЕНИЯ -->
+
             {% if c.id != chat %}
                 <span class="" style="white-space: nowrap; text-overflow: ellipsis;">{{ c.last_message.text }}</span>
             {% else %}
@@ -293,18 +293,17 @@
 {% block chat-sector %}
 {% if chat %}
 
-    <div id="dialogContent">
 
         <div class="row" id="messages" style="height: 90vh; overflow: auto;">
             <div class="col" id="chat">
 
                 {% for m in chatMessages %}
                     {% if m.profile.id == user.profile.id %}
-                        <div class="row mt-1">
-                            <div class="col-3">
-                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url('{% if user.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
+                        <div class="row mt-1 d-flex justify-content-start">
+                            <div class="col-3 d-flex justify-content-end">
+                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if user.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
                             </div>
-                            <div class="col-5">
+                            <div class="col-4">
                                 <p class="text-justify my-message text-break" style="float: left">
                                     {{ m.text }}
                                     <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
@@ -312,15 +311,15 @@
                             </div>
                         </div>
                     {% else %}
-                    <div class="row mt-1 d-flex flex-row-reverse">
-                        <div class="col-3">
-                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
-                        </div>
-                        <div class="col-5">
+                    <div class="row mt-1 d-flex justify-content-end">
+                        <div class="col-4">
                             <p class="text-justify friend-message text-break" style="float: right">
                                 {{ m.text }}
                                 <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
                             </p>
+                        </div>
+                        <div class="col-3 d-flex justify-content-start">
+                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
                         </div>
                     </div>
                     {% endif %}
@@ -330,7 +329,7 @@
         </div>
 
 
-        <div class="row d-flex justify-content-center p-3">
+        <div class="row d-flex justify-content-center p-3" style="height: 10vh;">
             <div class="col-7">
                 <textarea class="form-control" id="message-input" placeholder="Ваше сообщение" id="exampleFormControlTextarea1" rows="1"></textarea>
             </div>
@@ -341,6 +340,5 @@
                 </button>
             </div>
         </div>
-    </div>
 {% endif %}
 {% endblock %}
