@@ -40,22 +40,27 @@ chatSocket.onmessage = function(e) {
     if (data.profile.id == profileId) {
         //сообщение от меня
         chat.innerHTML +=
+
             '<div class="row mt-1">' +
             '<div class="col-3">' +
-            '<img src="' + avatar + '" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">' +
-            '</div><div class="col-5"><p class="text-justify my-message" style="float: left">' +
+            '<div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url(' + avatar + '), no-repeat; background-size: cover;"></div>' +
+            '</div><div class="col-5"><p class="text-justify text-break my-message" style="float: left">' +
             text +
             '</p><span>' + date + '</span></div></div>'
+
     } else {
         //сообщение от друга
         chat.innerHTML +=
             '<div class="row mt-1 d-flex flex-row-reverse">' +
             '<div class="col-3">' +
-            '<img src="' + avatar + '" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">' +
-            '</div><div class="col-5"><p class="text-justify friend-message" style="float: right">' +
+            '<div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url(' + avatar + '), no-repeat; background-size: cover;"></div>' +
+            '</div><div class="col-5">' +
+            '<p class="text-justify text-break friend-message" style="float: right">' +
             text +
             '</p><span>' + date + '</span></div></div>'
+    new Audio('http://talantlev.ucoz.ru/uvok.mp3').play()
     }
+
 
     document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
 };

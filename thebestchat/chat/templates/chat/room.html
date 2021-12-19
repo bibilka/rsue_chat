@@ -20,12 +20,7 @@
             </div>
             <div class="col-auto" style="margin-left: 10px;">
                 <a class="navbar-brand" href="#">
-                    <img {% if user.profile.avatar %}
-                         src="{{ user.profile.avatar.url }}"
-                         {% else %}
-                         src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
-                         {% endif %}
-                         alt="" width="30" height="30" class="d-inline-block align-text-top">
+                    <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url('{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
                     {{ user.username }} <span id="user_id" style="font-size:0.7em"><b>ID:</b> {{ user.id }}
                     {% if user.first_name or user.last_name %}
                     ({{ user.get_full_name }})
@@ -80,16 +75,13 @@
     <div class="chat row mt-1 d-flex align-items-center" type="button" value="Click"
          onmousedown="viewDialog({{ c.id }})" {% if c.id == chat %} style="background-color: #8eb4d4;transition: 0.6s;" {% endif %}>
         <div class="col-auto">
-            <img {% if c.friend_avatar %} src="{{ c.friend_avatar }}" {% else %}
-									src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png"
-									 {% endif %}
-                 class="rounded-circle img-fluid" alt="Аватар" height="55" width="55">
+            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 55px; height: 55px; background:url('{% if c.friend_avatar %}{{ c.friend_avatar }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
         </div>
         <div class="col-auto me-auto d-flex flex-column">
             <span style="font-weight: bold">{{ c.friend_name }}</span>
             <!-- TO DO СДЕЛАТЬ GET_STR_15 ДЛЯ ОГРАНИЧЕНИЯ ВЫВОДА СООБЩЕНИЯ -->
             {% if c.id != chat %}
-                <span class="">{{ c.last_message.text }}</span>
+                <span class="" style="white-space: nowrap; text-overflow: ellipsis;">{{ c.last_message.text }}</span>
             {% else %}
                 <span class=""><span id="typing-animation"></span></span>
             {% endif %}
@@ -300,7 +292,6 @@
 
 {% block chat-sector %}
 {% if chat %}
-<div class="col-8" id="dialog" style="background-color: #8eb4d4; height: 100vh;">
 
     <div id="dialogContent">
 
@@ -311,33 +302,25 @@
                     {% if m.profile.id == user.profile.id %}
                         <div class="row mt-1">
                             <div class="col-3">
-                                {% if m.profile.avatar %}
-                                    <img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
-                                {% else %}
-                                    <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: right;">
-                                {% endif %}
+                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url('{% if user.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
                             </div>
                             <div class="col-5">
-                                <p class="text-justify my-message" style="float: left">
+                                <p class="text-justify my-message text-break" style="float: left">
                                     {{ m.text }}
+                                    <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
                                 </p>
-                                <span>{{ m.created_at }}</span>
                             </div>
                         </div>
                     {% else %}
                     <div class="row mt-1 d-flex flex-row-reverse">
                         <div class="col-3">
-                            {% if m.profile.avatar %}
-                                <img src="{{ m.profile.avatar.url }}" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
-                            {% else %}
-                                <img src="https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png" class="rounded-circle img-fluid" alt="Аватар" height="30" width="30" style="float: left;">
-                            {% endif %}
+                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
                         </div>
                         <div class="col-5">
-                            <p class="text-justify friend-message" style="float: right">
+                            <p class="text-justify friend-message text-break" style="float: right">
                                 {{ m.text }}
+                                <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
                             </p>
-                            <span>{{ m.created_at }}</span>
                         </div>
                     </div>
                     {% endif %}
@@ -359,9 +342,5 @@
             </div>
         </div>
     </div>
-</div>
 {% endif %}
 {% endblock %}
-
-
-<!--<p class="text-break">mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm</p>-->

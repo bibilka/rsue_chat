@@ -12,7 +12,6 @@
     <title>Online Chat</title>
 </head>
 <body>
-
 <section class="container-fluid" style="max-height: 100vh;">
     <div class="row page-chats f-flex flex-row">
         <div class="col-auto chatlist bg-light" style="width: 400px; height: 100vh;">
@@ -22,7 +21,7 @@
 
         </div>
 
-        <div class="col chat bg-info" style="width: 100px; height: 100vh;">
+        <div class="col chat" id="dialog" style="width: 100px; height: 100vh;">
             {% block chat-sector %}
             {% endblock %}
         </div>

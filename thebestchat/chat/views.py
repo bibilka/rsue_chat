@@ -163,13 +163,20 @@ def getChats(request):
     for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
         friend = chat.profiles.exclude(user_id=request.user.id).first()
         last_message = Message.objects.filter(chat_id=chat.id).order_by('-id').first()
+        if last_message:
+            if len(last_message.text) > 40:
+                t_last_message = last_message.text[:40] + "..."
+            else:
+                t_last_message = last_message.text
+        else:
+            t_last_message = ''
         chats.append({
             'id': chat.id,
             'friend_name': friend.get_name(),
             'friend_avatar': friend.avatar.url if friend.avatar else '',
             'unreaded_messages': friend.messages(),
             'last_message': {
-                'text': last_message.text if last_message else '',
+                'text':   t_last_message,
                 'time': localtime(last_message.created_at).time() if last_message else '',
             }
         })
