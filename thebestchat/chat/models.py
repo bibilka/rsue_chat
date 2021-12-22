@@ -37,11 +37,6 @@ class Profile(models.Model):
         else:
             return self.user.username
 
-    @staticmethod
-    def messages():
-        # todo: заглушка (кол-во непрочитанных сообщений)
-        return str(randint(0, 100))
-
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):
         if created:
@@ -81,6 +76,8 @@ class Message(models.Model):
     text = models.CharField(max_length=255, verbose_name="Сообщение")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
+    was_read = models.BooleanField(default=False)
+
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
@@ -88,3 +85,9 @@ class Message(models.Model):
     def __str__(self):
         return self.text
 
+    # сокращенный вариант сообщения (для вывода последнего сообщения в диалоге)
+    def get_short_text(self):
+        if len(self.text) > 20:
+            return self.text[:20] + "..."
+        else:
+            return self.text

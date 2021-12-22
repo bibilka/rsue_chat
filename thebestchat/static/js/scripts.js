@@ -96,13 +96,13 @@ function readURL(input) {
 }
 
 
-document.getElementById('night-mode').addEventListener('click', function()
-{
-    let a = document.getElementsByTagName('a');
-
-    console.log(a);
-    for (let i = 0; i < a.length; i++)
-    {
-        a[i].style.color = "white";
-    }
-});
+//document.getElementById('night-mode').addEventListener('click', function()
+//{
+//    let a = document.getElementsByTagName('a');
+//
+//    console.log(a);
+//    for (let i = 0; i < a.length; i++)
+//    {
+//        a[i].style.color = "white";
+//    }
+//});

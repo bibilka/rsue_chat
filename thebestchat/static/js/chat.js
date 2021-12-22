@@ -40,25 +40,34 @@ chatSocket.onmessage = function(e) {
     if (data.profile.id == profileId) {
         //сообщение от меня
         chat.innerHTML +=
-
-            '<div class="row mt-1">' +
-            '<div class="col-3">' +
-            '<div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url(' + avatar + '), no-repeat; background-size: cover;"></div>' +
-            '</div><div class="col-5"><p class="text-justify text-break my-message" style="float: left">' +
-            text +
-            '</p><span>' + date + '</span></div></div>'
+            '<div class="row mt-1 d-flex justify-content-start">' +
+                 '<div class="col-3 d-flex justify-content-end">' +
+                      '<div class="avatar rounded-pill d-inline-block align-text-top" style="width: 40px; height: 40px; background:url(\'' + avatar +'\'), no-repeat; background-size: cover;"></div>' +
+                 '</div>' +
+                 '<div class="col-4">' +
+                    '<p class="text-justify my-message text-break" style="float: left">' +
+                        text +
+                        '<br><span class="text-muted" style="font-size: 12px;">' + date + '</span>' +
+                    '</p>' +
+                 '</div>' +
+            '</div>';
 
     } else {
         //сообщение от друга
         chat.innerHTML +=
-            '<div class="row mt-1 d-flex flex-row-reverse">' +
-            '<div class="col-3">' +
-            '<div class="avatar rounded-pill d-inline-block align-text-top"style="width: 30px; height: 30px; background:url(' + avatar + '), no-repeat; background-size: cover;"></div>' +
-            '</div><div class="col-5">' +
-            '<p class="text-justify text-break friend-message" style="float: right">' +
-            text +
-            '</p><span>' + date + '</span></div></div>'
-    new Audio('http://talantlev.ucoz.ru/uvok.mp3').play()
+            '<div class="row mt-1 d-flex justify-content-end">' +
+                '<div class="col-4">' +
+                    '<p class="text-justify friend-message text-break" style="float: right">' +
+                        text +
+                        '<br><span class="text-muted" style="font-size: 12px;">' + date + '</span>' +
+                    '</p>' +
+                '</div>' +
+                '<div class="col-3 d-flex justify-content-start">' +
+                    '<div class="avatar rounded-pill d-inline-block align-text-top" style="width: 40px; height: 40px; background:url(\'' + avatar + '\'), no-repeat; background-size: cover;"></div>' +
+                '</div>'+
+            '</div>';
+
+        new Audio('http://talantlev.ucoz.ru/uvok.mp3').play()
     }
 
 

@@ -163,20 +163,13 @@ def getChats(request):
     for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
         friend = chat.profiles.exclude(user_id=request.user.id).first()
         last_message = Message.objects.filter(chat_id=chat.id).order_by('-id').first()
-        if last_message:
-            if len(last_message.text) > 20:
-                t_last_message = last_message.text[:20] + "..."
-            else:
-                t_last_message = last_message.text
-        else:
-            t_last_message = ''
         chats.append({
             'id': chat.id,
             'friend_name': friend.get_name(),
             'friend_avatar': friend.avatar.url if friend.avatar else '',
-            'unreaded_messages': friend.messages(),
+            'unreaded_messages': Message.objects.filter(chat_id=chat.id, profile_id=friend, was_read=False).count(),
             'last_message': {
-                'text':   t_last_message,
+                'text':   last_message.get_short_text() if last_message else '',
                 'time': localtime(last_message.created_at).time() if last_message else '',
             }
         })
@@ -215,12 +208,15 @@ def dialog(request, chat_id):
     if not Chat.objects.filter(profiles__id=request.user.profile.id).filter(id=chat_id).exists():
         raise PermissionDenied()
 
-    # получаем все чаты пользователя с последним сообщением
-    chats = getChats(request)
-
     messages = Message.objects.filter(chat=chat_id)
     friend_requests = getFriendRequests(request)
     profile_settings_form = ProfileSettingsForm()
+
+    # помечаем все сообщения прочитанными
+    messages.update(was_read=True)
+
+    # получаем все чаты пользователя с последним сообщением
+    chats = getChats(request)
 
     return render(request, 'chat/room.html', {
         'chat': chat_id,

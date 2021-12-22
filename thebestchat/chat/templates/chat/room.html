@@ -89,7 +89,7 @@
         </div>
         <div class="col-auto d-flex align-items-end flex-column">
             <span class="text-secondary">{{ c.last_message.time }}</span>
-            <span class="m-1 badge bg-light-green rounded-pill">{{ c.unreaded_messages }}</span>
+            {% if c.unreaded_messages %}<span class="m-1 badge bg-light-green rounded-pill">{{ c.unreaded_messages }}</span>{% endif %}
         </div>
     </div>
 {% endfor %}
@@ -311,17 +311,17 @@
                             </div>
                         </div>
                     {% else %}
-                    <div class="row mt-1 d-flex justify-content-end">
-                        <div class="col-4">
-                            <p class="text-justify friend-message text-break" style="float: right">
-                                {{ m.text }}
-                                <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
-                            </p>
+                        <div class="row mt-1 d-flex justify-content-end">
+                            <div class="col-4">
+                                <p class="text-justify friend-message text-break" style="float: right">
+                                    {{ m.text }}
+                                    <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
+                                </p>
+                            </div>
+                            <div class="col-3 d-flex justify-content-start">
+                                <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
+                            </div>
                         </div>
-                        <div class="col-3 d-flex justify-content-start">
-                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
-                        </div>
-                    </div>
                     {% endif %}
                 {% endfor %}
 
