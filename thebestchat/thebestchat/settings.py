@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'encrypted_model_fields',
     'django.contrib.staticfiles',
 ]
-if (os.environ.get('RSUECHAT_PROD_ENV', 'False') == True):
+if (os.environ.get('RSUECHAT_PROD_ENV', 'False') == 'True'):
     INSTALLED_APPS.extend([
         'cloudinary_storage',
         'cloudinary',
