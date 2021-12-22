@@ -44,8 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'chat.apps.ChatConfig',
-    'django_extensions'
+    'django_extensions',
+    'encrypted_model_fields',
 ]
+
+FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', '')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

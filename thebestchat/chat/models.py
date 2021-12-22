@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from random import randint
 from datetime import datetime
+from encrypted_model_fields.fields import EncryptedCharField
 
 # Профиль пользователя
 class Profile(models.Model):
@@ -73,7 +74,7 @@ class Chat(models.Model):
 class Message(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Отправитель")
     chat = models.ForeignKey('Chat', on_delete=models.PROTECT, blank=True, null=True, verbose_name="Чат")
-    text = models.CharField(max_length=255, verbose_name="Сообщение")
+    text = EncryptedCharField(max_length=255, verbose_name="Сообщение")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата изменения")
     was_read = models.BooleanField(default=False)
