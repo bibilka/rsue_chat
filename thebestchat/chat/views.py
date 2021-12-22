@@ -159,9 +159,10 @@ def profileSettings(request):
             login(request, authenticate(request, username=user.username, password=password))
 
             # сохраняем аватарку
-            profile = request.user.profile;
-            profile.avatar = img
-            profile.save()
+            if img:
+                profile = request.user.profile;
+                profile.avatar = img
+                profile.save()
 
             messages.add_message(request, messages.SUCCESS, 'Настройки успешно сохранены.')
 
