@@ -17,6 +17,8 @@ class Profile(models.Model):
     chats = models.ManyToManyField('Chat', related_name='chats')
     # аватар профиля
     avatar = models.ImageField(null=True, blank=True, upload_to='images/profiles/')
+    # подтвержден ли пользователь
+    verified = models.BooleanField(default=False, verbose_name='Подтвержден')
 
     # расширяем метод сохранения модели
     def save(self, *args, **kwargs):
@@ -88,6 +90,16 @@ class Chat(models.Model):
     # преобразование объекта модели к строке
     def __str__(self):
         return self.name
+
+# токены для подтверждения email
+class EmailVerifyToken(models.Model):
+    email = models.EmailField(verbose_name="Email", default="")
+    token = models.CharField(max_length=100)
+
+    # отображаемые локализированные названия модели
+    class Meta:
+        verbose_name = 'Токен'
+        verbose_name_plural = 'Токены для подтверждения аккаунтов'
 
 # Сообщение в чате
 class Message(models.Model):

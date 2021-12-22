@@ -23,7 +23,7 @@ class InviteForm(forms.Form):
 class RegisterForm(ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['username', 'first_name', 'last_name']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
     # поле никнейм и его правила валидации
     username = forms.CharField(min_length=3, max_length=10, required=True, label='Никнейм', validators=[
@@ -34,6 +34,10 @@ class RegisterForm(ModelForm):
         ),
     ])
     username.group = 1
+
+    # поле email и его правила валидации
+    email = forms.EmailField(label="E-mail", required=True)
+    email.group = 1
 
     # поле имя и его правила валидации
     first_name = forms.CharField(min_length=3, max_length=30, required=False, label='Имя', validators=[
@@ -85,6 +89,12 @@ class RegisterForm(ModelForm):
 
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError({'username': "Такой логин уже занят"})
+
+        # валидация почты
+        email = self.cleaned_data.get("email")
+
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError({'email': "Такой email уже занят"})
 
         return cleaned_data
 

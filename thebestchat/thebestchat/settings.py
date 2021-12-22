@@ -32,7 +32,6 @@ ALLOWED_HOSTS = [
     '.herokuapp.com'
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,6 +46,12 @@ INSTALLED_APPS = [
     'django_extensions',
     'encrypted_model_fields',
 ]
+
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY', '')
 

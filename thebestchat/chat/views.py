@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 
@@ -7,9 +7,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from chat.forms import RegisterForm, LoginForm, InviteForm, ProfileSettingsForm
-from chat.models import Profile, Chat, Message, FriendRequest
+from chat.models import Profile, Chat, Message, FriendRequest, EmailVerifyToken
 
 from django.utils.timezone import localtime
+from uuid import uuid4
+
+from django.core.mail import EmailMessage
+
+from django.db import transaction
 
 # активные заявки в друзья
 def getFriendRequests(request):
@@ -278,9 +283,12 @@ def auth(request):
                 # если юзер ввел правильные логин и пароль - авторизуем
                 user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
                 if user is not None:
-                    login(request, user)
-                    # и отправляем на страницу чатов
-                    return redirect('chat')
+                    if get_object_or_404(Profile, user_id=user.id).verified:
+                        login(request, user)
+                        # и отправляем на страницу чатов
+                        return redirect('chat')
+                    else:
+                        form.add_error(None, 'Вы не подтвердили аккаунт.')
                 else:
                     form.add_error(None, 'Неверные данные!')
             except Exception as e:
@@ -311,14 +319,56 @@ def register(request):
         if form.is_valid():
             # валидируем форму
             try:
-                user = form.save(commit=False)
-                user.set_password(form.cleaned_data['password'])
-                user.save()
-                # создаем нового пользователя и делаем редирект на страницу авторизации
-                messages.add_message(request, messages.SUCCESS, "Вы успешно зарегистрировались! Можете войти.")
-                return redirect('auth')
+                with transaction.atomic():
+                    user = form.save(commit=False)
+                    user.set_password(form.cleaned_data['password'])
+                    user.save()
+
+                    # отправляем письмо для подтверждения
+                    send_registration_email(request, user.email)
+
+                    # создаем нового пользователя и делаем редирект на страницу авторизации
+                    messages.add_message(request, messages.SUCCESS, "Вы успешно зарегистрировались! Проверьте свою почту.")
+                    return redirect('auth')
             except Exception as e:
                 print(str(e))
                 form.add_error(None, 'Ошибка при регистрации. Пожалуйста, обратитесь к администратору')
     # иначе отображаем страницу регистрации
     return render(request, 'chat/register.html', {'form': form})
+
+# подтверждение пользователя по email адресу
+def verify_email(request):
+
+    # валидируем запрос
+    if request.method != 'GET' or 'token' not in request.GET or 'email' not in request.GET:
+        raise PermissionDenied()
+
+    # получаем объекты токена и профиля
+    email_verify_object = get_object_or_404(EmailVerifyToken, email=request.GET['email'], token=request.GET['token'])
+    profile = get_object_or_404(Profile, user__email=request.GET['email'])
+
+    with transaction.atomic():
+        # подтверждаем профиль и удаляем объект токена
+        profile.verified = True
+        profile.save()
+
+        email_verify_object.delete()
+
+    # перенаправляем на страницу авторизации
+    messages.add_message(request, messages.SUCCESS, "Аккаунт подтвержден! Можете войти.")
+    return redirect('auth')
+
+# отправка письма на почту пользователю для подтверждения аккаунта
+def send_registration_email(request, email_to):
+
+    # генерируем уникальный токен
+    token = uuid4()
+    EmailVerifyToken.objects.create(email=email_to, token=token)
+
+    # отправляем письмо
+    email = EmailMessage(
+        'Регистрация на платформе The Best Chat',
+        'Подтвердите регистрацию, перейдя по ссылке: ' + request.build_absolute_uri('/chat/verify-email?token={}&email={}'.format(token, email_to)),
+        to=[email_to]
+    )
+    email.send()

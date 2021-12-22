@@ -15,5 +15,7 @@ urlpatterns = [
     path('', chat, name='chat'),
     path('<int:chat_id>', dialog, name='dialog'),
 
-    path('profileSettings', profileSettings, name='profileSettings')
+    path('profileSettings', profileSettings, name='profileSettings'),
+
+    path('verify-email', verify_email, name='verifyEmail')
 ]

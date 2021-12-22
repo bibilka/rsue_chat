@@ -2,6 +2,10 @@ from django.contrib import admin
 from .models import *
 from django.utils.html import format_html
 
+@admin.register(EmailVerifyToken)
+class AdminEmailVerifyToken(admin.ModelAdmin):
+    list_display = ('id', 'email', 'token')
+
 @admin.register(FriendRequest)
 class AdminFriendRequest(admin.ModelAdmin):
     # административная модель для операций с заявками в друзья
@@ -18,7 +22,7 @@ class AdminFriendRequest(admin.ModelAdmin):
 class ProfileAdmin(admin.ModelAdmin):
     # административная модель для операций с профилями пользователей
     # поля: id, пользователь, даты, друзья, аватар, чаты, заявки в друзья
-    list_display = ('id', 'user', 'created_at', 'updated_at', 'display_friends', 'image_tag', 'chats_tag', 'friend_requests_tag')
+    list_display = ('id', 'user', 'created_at', 'updated_at', 'display_friends', 'image_tag', 'chats_tag', 'friend_requests_tag', 'verified')
     fields = ('user', 'friends', 'avatar')
 
     # фильтры по пользователю
