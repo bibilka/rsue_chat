@@ -217,14 +217,13 @@
             <div class="col"><P><b>Отправить заявку в друзья</b></P>
                 <div class="input-group mt-3 border rounded-pill p-2 ">
 
-                    {% csrf_token %}
-                        <input type="number" placeholder="Введите id пользователя" aria-describedby="button-addon3"
-                               class="form-control bg-none rounded-pill" required name="friend" aria-label="Search">
-                        <div class="input-group-append border-0">
-                            <button id="button-addon3" type="submit" class="btn btn-link text-secondary">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
+                    <input type="number" placeholder="Введите id пользователя" aria-describedby="button-addon3"
+                           class="form-control bg-none rounded-pill" required name="friend" aria-label="Search">
+                    <div class="input-group-append border-0">
+                        <button id="button-addon3" type="submit" class="btn btn-link text-secondary">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
 
                 </div>
             </div>
@@ -289,56 +288,54 @@
 </div>
 {% endblock %}
 
-
 {% block chat-sector %}
 {% if chat %}
 
+    <div class="row" id="messages" style="height: 90vh; overflow: auto;">
+        <div class="col" id="chat">
 
-        <div class="row" id="messages" style="height: 90vh; overflow: auto;">
-            <div class="col" id="chat">
-
-                {% for m in chatMessages %}
-                    {% if m.profile.id == user.profile.id %}
-                        <div class="row mt-1 d-flex justify-content-start">
-                            <div class="col-3 d-flex justify-content-end">
-                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if user.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
-                            </div>
-                            <div class="col-4">
-                                <p class="text-justify my-message text-break" style="float: left">
-                                    {{ m.text }}
-                                    <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
-                                </p>
-                            </div>
+            {% for m in chatMessages %}
+                {% if m.profile.id == user.profile.id %}
+                    <div class="row mt-1 d-flex justify-content-start">
+                        <div class="col-3 d-flex justify-content-end">
+                        <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if user.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
                         </div>
-                    {% else %}
-                        <div class="row mt-1 d-flex justify-content-end">
-                            <div class="col-4">
-                                <p class="text-justify friend-message text-break" style="float: right">
-                                    {{ m.text }}
-                                    <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
-                                </p>
-                            </div>
-                            <div class="col-3 d-flex justify-content-start">
-                                <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
-                            </div>
+                        <div class="col-4">
+                            <p class="text-justify my-message text-break" style="float: left">
+                                {{ m.text }}
+                                <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
+                            </p>
                         </div>
-                    {% endif %}
-                {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="row mt-1 d-flex justify-content-end">
+                        <div class="col-4">
+                            <p class="text-justify friend-message text-break" style="float: right">
+                                {{ m.text }}
+                                <br><span class="text-muted" style="font-size: 12px;">{{ m.created_at }}</span>
+                            </p>
+                        </div>
+                        <div class="col-3 d-flex justify-content-start">
+                            <div class="avatar rounded-pill d-inline-block align-text-top"style="width: 40px; height: 40px; background:url('{% if m.profile.avatar %}{{ m.profile.avatar.url }}{% else %}https://i.pinimg.com/originals/cc/6c/07/cc6c07880dfd0c337c875b3cdc6821c8.png{% endif %}'), no-repeat; background-size: cover;"></div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
 
-            </div>
+        </div>
+    </div>
+
+
+    <div class="row d-flex justify-content-center p-3" style="height: 10vh;">
+        <div class="col-7">
+            <textarea class="form-control" id="message-input" placeholder="Ваше сообщение" id="exampleFormControlTextarea1" rows="1"></textarea>
         </div>
 
-
-        <div class="row d-flex justify-content-center p-3" style="height: 10vh;">
-            <div class="col-7">
-                <textarea class="form-control" id="message-input" placeholder="Ваше сообщение" id="exampleFormControlTextarea1" rows="1"></textarea>
-            </div>
-
-            <div class="col-1">
-                <button type="submit" id="btn-submit" type="button" value="Send" class="btn btn-outline-primary rounded-circle d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
-                    <img src="{% static 'images/send.png' %}">
-                </button>
-            </div>
+        <div class="col-1">
+            <button type="submit" id="btn-submit" type="button" value="Send" class="btn btn-outline-primary rounded-circle d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                <img src="{% static 'images/send.png' %}">
+            </button>
         </div>
+    </div>
 {% endif %}
 {% endblock %}

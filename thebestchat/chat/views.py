@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 
@@ -14,7 +14,7 @@ from django.utils.timezone import localtime
 # активные заявки в друзья
 def getFriendRequests(request):
 
-    # отправленные заявки (исходящие)
+    # отправленные заявки текущего пользователя (исходящие)
     posted_requests = []
     for posted_request in FriendRequest.objects.filter(request_sender_id=request.user.profile.id):
         posted_requests.append({
@@ -24,7 +24,7 @@ def getFriendRequests(request):
             'datetime': posted_request.created_at
         })
 
-    # активные запросы в друзья (входящие)
+    # активные запросы в друзья для текущего пользователя (входящие)
     incoming_requests = []
     for incoming_request in FriendRequest.objects.filter(request_receiver_id=request.user.profile.id):
         incoming_requests.append({
@@ -37,14 +37,18 @@ def getFriendRequests(request):
 
 # обработка заявки в друзья
 def processFriendRequest(request):
+    # проверка авторизации
     if not request.user.is_authenticated:
         return redirect('logout')
 
+    # проверка метода отправки формы
     if request.method != 'POST':
         return redirect('chat')
 
+    # проверяем наличие обрабатываемого запроса в друзья в базе данных
     friend_request = get_object_or_404(FriendRequest, pk=request.POST.get('request_id'))
 
+    # если заявка была принята
     if request.POST.get('action') == 'accept':
         # добавляем пользователей в друзья
         friend = Profile.objects.get(id=friend_request.request_sender_id)
@@ -62,20 +66,24 @@ def processFriendRequest(request):
     # удаляем заявку
     friend_request.delete()
 
+    # возвращаем на главную страницу чата
     return redirect('chat')
 
 # отправка заявки в друзья
 def sendFriendRequest(request):
+    # проверка авторизации
     if not request.user.is_authenticated:
         return redirect('logout')
 
+    # проверка метода отправки формы
     if request.method != 'POST':
         return redirect('chat')
 
+    # инициализируем объект формы и заполянем данными из POST запроса
     inviteForm = InviteForm(request.POST)
 
+    # валидируем форму
     if inviteForm.is_valid():
-
         try:
             friend = User.objects.get(id=inviteForm.cleaned_data['friend'])
 
@@ -100,7 +108,9 @@ def sendFriendRequest(request):
 
     # получаем все чаты пользователя с последним сообщением
     chats = getChats(request)
+    # получаем все заявки в друзья текущего пользователя
     friend_requests = getFriendRequests(request)
+    # форма настроек профиля
     profile_settings_form = ProfileSettingsForm()
 
     return render(request, 'chat/room.html', {
@@ -114,15 +124,20 @@ def sendFriendRequest(request):
 
 # изменение настроек профиля
 def profileSettings(request):
+
+    # проверка авторизации
     if not request.user.is_authenticated:
         return redirect('logout')
 
+    # проверка метода отправки формы
     if request.method != 'POST':
         profile_settings_form = ProfileSettingsForm()
+
     else:
+        # если форма была отправлена - инициализируем объект, заполняем данными из POST запроса и получаем переданные файлы
         profile_settings_form = ProfileSettingsForm(request.POST, request.FILES)
         if profile_settings_form.is_valid():
-
+            # валидируем форму
             password = profile_settings_form.cleaned_data.get("password")
             img = profile_settings_form.cleaned_data.get("avatar")
 
@@ -130,12 +145,15 @@ def profileSettings(request):
             user.first_name = profile_settings_form.cleaned_data.get("first_name", "")
             user.last_name = profile_settings_form.cleaned_data.get("last_name", "")
 
+            # изменяем пароль, только если пришел новый пароль
             if (password and password!='password'):
                 user.set_password(password)
 
+            # сохраняем данные пользователя и авторизуем передавая обновленный объект модели
             user.save()
             login(request, authenticate(request, username=user.username, password=password))
 
+            # сохраняем аватарку
             profile = request.user.profile;
             profile.avatar = img
             profile.save()
@@ -147,6 +165,7 @@ def profileSettings(request):
 
     # получаем все чаты пользователя с последним сообщением
     chats = getChats(request)
+    # получаем все заявки в друзья текущего пользователя
     friend_requests = getFriendRequests(request)
 
     return render(request, 'chat/room.html', {
@@ -157,17 +176,22 @@ def profileSettings(request):
         'friend_requests': friend_requests
     })
 
-# получение чатов пользователя
+# получение чатов текущего пользователя
 def getChats(request):
     chats = []
     for chat in Chat.objects.filter(profiles__id=request.user.profile.id):
+        # пользователь с которым ведется диалог
         friend = chat.profiles.exclude(user_id=request.user.id).first()
+        # последнее сообщение
         last_message = Message.objects.filter(chat_id=chat.id).order_by('-id').first()
         chats.append({
             'id': chat.id,
             'friend_name': friend.get_name(),
+            # аватарка
             'friend_avatar': friend.avatar.url if friend.avatar else '',
+            # кол-во непрочитанных сообщений
             'unreaded_messages': Message.objects.filter(chat_id=chat.id, profile_id=friend, was_read=False).count(),
+            # текст и время отправки последнего сообщения
             'last_message': {
                 'text':   last_message.get_short_text() if last_message else '',
                 'time': localtime(last_message.created_at).time() if last_message else '',
@@ -179,12 +203,15 @@ def getChats(request):
 def pageNotFound(request, exception):
     return HttpResponseNotFound("<h1>404 страница не найдена</h1>")
 
-# чат
+# главная страница чата (список диалогов)
 def chat(request):
+
     if request.user.is_authenticated:
         # получаем все чаты пользователя с последним сообщением
         chats = getChats(request)
+        # получаем все заявки в друзья текущего пользователя
         friend_requests = getFriendRequests(request)
+        # форма настроек профиля
         profile_settings_form = ProfileSettingsForm()
 
         return render(request, 'chat/room.html', {
@@ -194,10 +221,10 @@ def chat(request):
             'chats': chats,
             'friend_requests': friend_requests
         })
-
+    # если не авторизован - отправляем на страницу входа
     return redirect('auth')
 
-# диалог
+# отображение страницы конкретного диалога
 def dialog(request, chat_id):
 
     # проверям что юзер авторизован
@@ -208,7 +235,10 @@ def dialog(request, chat_id):
     if not Chat.objects.filter(profiles__id=request.user.profile.id).filter(id=chat_id).exists():
         raise PermissionDenied()
 
+    # получаем сообщения в диалоге
     messages = Message.objects.filter(chat=chat_id)
+
+    # заявки в друзья и форма настроек профиля
     friend_requests = getFriendRequests(request)
     profile_settings_form = ProfileSettingsForm()
 
@@ -231,21 +261,25 @@ def dialog(request, chat_id):
 # авторизация
 def auth(request):
 
+    # если юзер уже авторизован - выходим
     if request.user.is_authenticated:
         return redirect('logout')
 
+    # инициализируем объект формы
     form = LoginForm()
 
     if request.method == 'POST':
-
+        # если форма была отправлена - заполняем объект данным из POST запроса
         form = LoginForm(request.POST)
 
         if form.is_valid():
-
+            # валидируем форму
             try:
+                # если юзер ввел правильные логин и пароль - авторизуем
                 user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
                 if user is not None:
                     login(request, user)
+                    # и отправляем на страницу чатов
                     return redirect('chat')
                 else:
                     form.add_error(None, 'Неверные данные!')
@@ -253,35 +287,38 @@ def auth(request):
                 print(str(e))
                 form.add_error(None, 'Ошибка при авторизации. Пожалуйста, обратитесь к администратору')
 
+    # иначе отображаем страницу с авторизацией
     return render(request, 'chat/auth.html', {'form': form})
 
 # выход (деавторизация)
 def logout(request):
-
     logout(request)
     return redirect('auth')
 
 # регистрация
 def register(request):
+    # если юзер уже авторизован - выходим
     if request.user.is_authenticated:
         return redirect('logout')
 
+    # инициализируем объект формы
     form = RegisterForm()
 
     if request.method == 'POST':
-
+        # если форма была отправлена - получаем данные из POST запроса
         form = RegisterForm(request.POST)
 
         if form.is_valid():
+            # валидируем форму
             try:
                 user = form.save(commit=False)
                 user.set_password(form.cleaned_data['password'])
                 user.save()
-
+                # создаем нового пользователя и делаем редирект на страницу авторизации
                 messages.add_message(request, messages.SUCCESS, "Вы успешно зарегистрировались! Можете войти.")
                 return redirect('auth')
             except Exception as e:
                 print(str(e))
                 form.add_error(None, 'Ошибка при регистрации. Пожалуйста, обратитесь к администратору')
-
+    # иначе отображаем страницу регистрации
     return render(request, 'chat/register.html', {'form': form})

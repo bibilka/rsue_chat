@@ -2,6 +2,7 @@ from django.urls import path, reverse_lazy
 from .views import *
 from django.contrib.auth.views import LogoutView
 
+# основные паттерны для маршрутизации роутов в приложении
 urlpatterns = [
 
     path('register', register, name='register'),
@@ -15,5 +16,4 @@ urlpatterns = [
     path('<int:chat_id>', dialog, name='dialog'),
 
     path('profileSettings', profileSettings, name='profileSettings')
-
 ]
