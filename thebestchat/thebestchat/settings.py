@@ -40,12 +40,24 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'channels',
     'chat.apps.ChatConfig',
     'django_extensions',
     'encrypted_model_fields',
+    'django.contrib.staticfiles',
 ]
+if (os.environ.get('RSUECHAT_PROD_ENV', 'False') == True):
+    INSTALLED_APPS.extend([
+        'cloudinary_storage',
+        'cloudinary',
+    ])
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_STORAGE_CLOUD_NAME', ''),
+        'API_KEY': os.environ.get('CLOUDINARY_STORAGE_API_KEY', ''),
+        'API_SECRET': os.environ.get('API_SECRET', ''),
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
