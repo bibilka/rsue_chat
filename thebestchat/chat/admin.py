@@ -5,12 +5,14 @@ from django.utils.html import format_html
 @admin.register(EmailVerifyToken)
 class AdminEmailVerifyToken(admin.ModelAdmin):
     list_display = ('id', 'email', 'token')
+    search_fields = ['email', 'token']
 
 @admin.register(FriendRequest)
 class AdminFriendRequest(admin.ModelAdmin):
     # административная модель для операций с заявками в друзья
     # поля: id, получатель, отправитель, дата создания
     list_display = ('id', 'request_sender', 'request_receiver', 'created_at')
+    search_fields = ['request_sender__user__username', 'request_receiver__user__username']
 
     # фильтры по: получателю и отправителю
     list_filter = (
@@ -25,6 +27,8 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'created_at', 'updated_at', 'display_friends', 'image_tag', 'chats_tag', 'friend_requests_tag', 'verified')
     fields = ('user', 'friends', 'avatar', 'verified')
     list_display_links = ['user']
+    list_editable = ['verified']
+    search_fields = ['user__username']
 
     # фильтры по пользователю
     list_filter = (
@@ -58,6 +62,7 @@ class ChatAdmin(admin.ModelAdmin):
     # поля: id, название, даты, участники чата
     list_display = ('id', 'name', 'created_at', 'updated_at', 'display_users')
     list_display_links = ['name']
+    search_fields = ['name']
 
     # фильтр по участникам чата
     list_filter = (
