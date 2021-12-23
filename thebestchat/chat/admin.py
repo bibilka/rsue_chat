@@ -24,6 +24,7 @@ class ProfileAdmin(admin.ModelAdmin):
     # поля: id, пользователь, даты, друзья, аватар, чаты, заявки в друзья
     list_display = ('id', 'user', 'created_at', 'updated_at', 'display_friends', 'image_tag', 'chats_tag', 'friend_requests_tag', 'verified')
     fields = ('user', 'friends', 'avatar', 'verified')
+    list_display_links = ['user']
 
     # фильтры по пользователю
     list_filter = (
@@ -56,6 +57,7 @@ class ChatAdmin(admin.ModelAdmin):
     # административная модель для операций с чатами
     # поля: id, название, даты, участники чата
     list_display = ('id', 'name', 'created_at', 'updated_at', 'display_users')
+    list_display_links = ['name']
 
     # фильтр по участникам чата
     list_filter = (
