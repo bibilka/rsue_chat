@@ -67,7 +67,7 @@ chatSocket.onmessage = function(e) {
                 '</div>'+
             '</div>';
 
-        new Audio('http://talantlev.ucoz.ru/uvok.mp3').play()
+        new Audio('/static/audio/uvok.mp3').play()
     }
 
 
